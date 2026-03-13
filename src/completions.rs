@@ -16,18 +16,26 @@ pub fn complete(
     }
 
     let command = words[0];
-    let prefix = if words.len() > 1 {
-        words.last().unwrap_or(&"")
-    } else {
+    // When buffer ends with whitespace after a word, prefix is empty (new argument)
+    let prefix = if buffer.ends_with(char::is_whitespace) || words.len() <= 1 {
         ""
+    } else {
+        words.last().unwrap_or(&"")
     };
+
+    let dirs_only = matches!(command, "cd" | "pushd" | "popd");
+
+    // For directory-navigation commands, go straight to path completion
+    if dirs_only && cfg.index_path {
+        return Ok(path_completions(prefix, cfg.max_results, true));
+    }
 
     // Query stored completions
     let mut results = store.query(command, prefix, cfg.max_results)?;
 
     // If no stored completions, try path completion
     if results.is_empty() && cfg.index_path {
-        results = path_completions(prefix, cfg.max_results);
+        results = path_completions(prefix, cfg.max_results, false);
     }
 
     Ok(results)
@@ -155,53 +163,78 @@ fn index_fish_completions(store: &CompletionStore, dir: &Path) -> Result<()> {
     Ok(())
 }
 
-/// Simple path completion from the current directory
-fn path_completions(prefix: &str, limit: usize) -> Vec<CompletionEntry> {
-    let dir = if prefix.contains('/') {
-        Path::new(prefix)
-            .parent()
-            .unwrap_or(Path::new("."))
-    } else {
-        Path::new(".")
-    };
-
-    let file_prefix = if prefix.contains('/') {
-        Path::new(prefix)
-            .file_name()
-            .and_then(|s| s.to_str())
-            .unwrap_or("")
+/// Path completion with proper progressive directory traversal.
+///
+/// Handles three prefix shapes:
+///   ""        → list CWD entries, no filter
+///   "src/"    → list src/ contents, no filter (trailing slash = descend)
+///   "src/ma"  → list src/ contents, filter by "ma"
+///   "fo"      → list CWD entries, filter by "fo"
+fn path_completions(prefix: &str, limit: usize, dirs_only: bool) -> Vec<CompletionEntry> {
+    // Expand leading ~ to home directory
+    let expanded;
+    let prefix = if prefix.starts_with('~') {
+        if let Some(home) = dirs::home_dir() {
+            expanded = format!("{}{}", home.display(), &prefix[1..]);
+            &expanded
+        } else {
+            prefix
+        }
     } else {
         prefix
     };
 
+    let (dir, file_prefix, base) = if prefix.ends_with('/') {
+        // Trailing slash: list this directory's contents, no filter
+        (Path::new(prefix).to_path_buf(), "", prefix)
+    } else if prefix.contains('/') {
+        // Mid-path: parent is the directory, filename portion is the filter
+        let slash = prefix.rfind('/').unwrap();
+        let dir_part = &prefix[..=slash];
+        let name_part = &prefix[slash + 1..];
+        (Path::new(dir_part).to_path_buf(), name_part, dir_part)
+    } else {
+        // No slashes: list CWD, filter by prefix
+        (Path::new(".").to_path_buf(), prefix, "")
+    };
+
     let mut results = Vec::new();
-    if let Ok(entries) = std::fs::read_dir(dir) {
-        for entry in entries.flatten().take(limit * 2) {
-            let name = entry.file_name();
-            let name_str = name.to_string_lossy();
-            if name_str.starts_with(file_prefix) || file_prefix.is_empty() {
-                let is_dir = entry.file_type().map(|t| t.is_dir()).unwrap_or(false);
-                let completion = if prefix.contains('/') {
-                    format!(
-                        "{}/{}{}",
-                        dir.display(),
-                        name_str,
-                        if is_dir { "/" } else { "" }
-                    )
-                } else {
-                    format!("{}{}", name_str, if is_dir { "/" } else { "" })
-                };
-                results.push(CompletionEntry {
-                    command: String::new(),
-                    completion,
-                    description: if is_dir { "directory" } else { "file" }.into(),
-                    source: "path".into(),
-                });
-                if results.len() >= limit {
-                    break;
-                }
-            }
+    let Ok(entries) = std::fs::read_dir(&dir) else {
+        return results;
+    };
+
+    for entry in entries.flatten() {
+        if results.len() >= limit {
+            break;
         }
+        let name = entry.file_name();
+        let name_str = name.to_string_lossy();
+
+        // Skip hidden files unless the filter starts with '.'
+        if name_str.starts_with('.') && !file_prefix.starts_with('.') {
+            continue;
+        }
+
+        if !file_prefix.is_empty() && !name_str.starts_with(file_prefix) {
+            continue;
+        }
+
+        let is_dir = entry.file_type().map(|t| t.is_dir()).unwrap_or(false);
+        if dirs_only && !is_dir {
+            continue;
+        }
+
+        let suffix = if is_dir { "/" } else { "" };
+        let completion = format!("{base}{name_str}{suffix}");
+
+        results.push(CompletionEntry {
+            command: String::new(),
+            completion,
+            description: if is_dir { "directory" } else { "file" }.into(),
+            source: "path".into(),
+        });
     }
+
+    results.sort_by(|a, b| a.completion.cmp(&b.completion));
     results
 }
