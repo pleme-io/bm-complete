@@ -1,14 +1,59 @@
-use crate::config::Config;
-use crate::store::{CompletionEntry, CompletionStore};
+use crate::cache::{CacheStore, Fingerprinter, resolve_cached};
+use crate::config::CompletionConfig;
+use crate::source::CompletionSource;
+use crate::store::{CompletionEntry, Store};
 use anyhow::Result;
+use std::collections::HashSet;
 use std::path::Path;
 
-/// Complete a command line at the given cursor position
+/// Context classification for completion behavior.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum CompletionContext {
+    /// cd, pushd, popd, z — directory-only results
+    DirectoryNav,
+    /// Prefix looks like a path (starts with /, ~, ./)
+    PathCompletion,
+    /// Prefix starts with - (flag completion)
+    FlagCompletion,
+    /// General command argument
+    CommandArg,
+}
+
+/// O(1) set of commands that navigate directories.
+static DIR_NAV_COMMANDS: std::sync::LazyLock<HashSet<&'static str>> =
+    std::sync::LazyLock::new(|| {
+        ["cd", "pushd", "popd", "z", "zoxide", "j", "autojump"]
+            .into_iter()
+            .collect()
+    });
+
+/// Classify the completion context for a command + prefix.
+pub fn classify_context(command: &str, prefix: &str) -> CompletionContext {
+    // Tier 1: O(1) directory navigation commands
+    if DIR_NAV_COMMANDS.contains(command) {
+        return CompletionContext::DirectoryNav;
+    }
+    // Tier 2: path shape
+    if prefix.starts_with('/')
+        || prefix.starts_with('~')
+        || prefix.starts_with("./")
+        || prefix.starts_with("../")
+    {
+        return CompletionContext::PathCompletion;
+    }
+    // Tier 3: flag shape
+    if prefix.starts_with('-') {
+        return CompletionContext::FlagCompletion;
+    }
+    CompletionContext::CommandArg
+}
+
+/// Complete a command line at the given cursor position.
 pub fn complete(
     buffer: &str,
     _position: usize,
-    store: &CompletionStore,
-    cfg: &Config,
+    store: &dyn Store,
+    cfg: &dyn CompletionConfig,
 ) -> Result<Vec<CompletionEntry>> {
     let words: Vec<&str> = buffer.split_whitespace().collect();
     if words.is_empty() {
@@ -16,160 +61,78 @@ pub fn complete(
     }
 
     let command = words[0];
-    // When buffer ends with whitespace after a word, prefix is empty (new argument)
     let prefix = if buffer.ends_with(char::is_whitespace) || words.len() <= 1 {
         ""
     } else {
         words.last().unwrap_or(&"")
     };
 
-    let dirs_only = matches!(command, "cd" | "pushd" | "popd");
+    let ctx = classify_context(command, prefix);
 
-    // For directory-navigation commands, go straight to path completion
-    if dirs_only && cfg.index_path {
-        return Ok(path_completions(prefix, cfg.max_results, true));
+    // Directory navigation -> path completion (dirs only)
+    if ctx == CompletionContext::DirectoryNav && cfg.index_path() {
+        return Ok(path_completions(prefix, cfg.max_results(), true));
+    }
+
+    // Path-shaped prefix -> path completion (files + dirs)
+    if ctx == CompletionContext::PathCompletion && cfg.index_path() {
+        return Ok(path_completions(prefix, cfg.max_results(), false));
     }
 
     // Query stored completions
-    let mut results = store.query(command, prefix, cfg.max_results)?;
+    let mut results = store.query(command, prefix, cfg.max_results())?;
 
     // If no stored completions, try path completion
-    if results.is_empty() && cfg.index_path {
-        results = path_completions(prefix, cfg.max_results, false);
+    if results.is_empty() && cfg.index_path() {
+        results = path_completions(prefix, cfg.max_results(), false);
     }
 
     Ok(results)
 }
 
-/// Index completion sources into the store
-pub fn index_sources(store: &CompletionStore, fish_dir: Option<&Path>) -> Result<()> {
-    // Index fish completions if available
-    let fish_dirs: Vec<&Path> = if let Some(dir) = fish_dir {
-        vec![dir]
-    } else {
-        let defaults = vec![
-            Path::new("/usr/share/fish/completions"),
-            Path::new("/usr/local/share/fish/completions"),
-            Path::new("/opt/homebrew/share/fish/completions"),
-        ];
-        defaults.into_iter().filter(|p| p.exists()).collect()
-    };
-
-    for dir in fish_dirs {
-        index_fish_completions(store, dir)?;
+/// Index all given completion sources into the store.
+pub fn index_sources(store: &dyn Store, sources: &[&dyn CompletionSource]) -> Result<()> {
+    for source in sources {
+        let entries = source.entries()?;
+        for entry in &entries {
+            store.insert(entry)?;
+        }
     }
-
     let count = store.count()?;
     println!("indexed {count} completion entries");
     Ok(())
 }
 
-/// Parse fish completion files and insert into store
-fn index_fish_completions(store: &CompletionStore, dir: &Path) -> Result<()> {
-    if !dir.is_dir() {
-        return Ok(());
+/// Cache-aware variant of [`index_sources`]. Uses `resolve_cached()` and
+/// stores the resolved entries into the provided store.
+pub fn index_sources_cached(
+    store: &dyn Store,
+    sources: &[&dyn CompletionSource],
+    cache: &dyn CacheStore,
+    fp: &dyn Fingerprinter,
+) -> Result<()> {
+    let entries = resolve_cached(cache, fp, || {
+        let mut all = Vec::new();
+        for source in sources {
+            all.extend(source.entries()?);
+        }
+        Ok(all)
+    })?;
+    for entry in &entries {
+        store.insert(entry)?;
     }
-
-    let entries = std::fs::read_dir(dir)?;
-    for entry in entries.flatten() {
-        let path = entry.path();
-        if path.extension().and_then(|e| e.to_str()) != Some("fish") {
-            continue;
-        }
-
-        let command = path
-            .file_stem()
-            .and_then(|s| s.to_str())
-            .unwrap_or("")
-            .to_string();
-
-        if command.is_empty() {
-            continue;
-        }
-
-        let content = match std::fs::read_to_string(&path) {
-            Ok(c) => c,
-            Err(_) => continue,
-        };
-
-        // Parse fish's `complete -c <command> -s <short> -l <long> -d <description>` lines
-        for line in content.lines() {
-            let line = line.trim();
-            if !line.starts_with("complete") {
-                continue;
-            }
-
-            let parts: Vec<&str> = line.split_whitespace().collect();
-            let mut completion = String::new();
-            let mut description = String::new();
-
-            let mut i = 0;
-            while i < parts.len() {
-                match parts[i] {
-                    "-s" if i + 1 < parts.len() => {
-                        if !completion.is_empty() {
-                            // Save the long option first, then override with short
-                        }
-                        completion = format!("-{}", parts[i + 1]);
-                        i += 2;
-                    }
-                    "-l" if i + 1 < parts.len() => {
-                        completion = format!("--{}", parts[i + 1]);
-                        i += 2;
-                    }
-                    "-a" if i + 1 < parts.len() => {
-                        // Argument completions (values)
-                        let val = parts[i + 1].trim_matches('\'').trim_matches('"');
-                        for v in val.split_whitespace() {
-                            let _ = store.insert(&CompletionEntry {
-                                command: command.clone(),
-                                completion: v.to_string(),
-                                description: String::new(),
-                                source: "fish".into(),
-                            });
-                        }
-                        i += 2;
-                    }
-                    "-d" if i + 1 < parts.len() => {
-                        // Description may be quoted
-                        let rest = parts[i + 1..].join(" ");
-                        if rest.starts_with('\'') || rest.starts_with('"') {
-                            let quote = rest.chars().next().unwrap();
-                            if let Some(end) = rest[1..].find(quote) {
-                                description = rest[1..end + 1].to_string();
-                            }
-                        } else {
-                            description = parts[i + 1].to_string();
-                        }
-                        i = parts.len(); // consume rest
-                    }
-                    _ => {
-                        i += 1;
-                    }
-                }
-            }
-
-            if !completion.is_empty() {
-                let _ = store.insert(&CompletionEntry {
-                    command: command.clone(),
-                    completion,
-                    description,
-                    source: "fish".into(),
-                });
-            }
-        }
-    }
-
+    let count = store.count()?;
+    println!("indexed {count} completion entries (cached)");
     Ok(())
 }
 
 /// Path completion with proper progressive directory traversal.
 ///
 /// Handles three prefix shapes:
-///   ""        → list CWD entries, no filter
-///   "src/"    → list src/ contents, no filter (trailing slash = descend)
-///   "src/ma"  → list src/ contents, filter by "ma"
-///   "fo"      → list CWD entries, filter by "fo"
+///   ""        -> list CWD entries, no filter
+///   "src/"    -> list src/ contents, no filter (trailing slash = descend)
+///   "src/ma"  -> list src/ contents, filter by "ma"
+///   "fo"      -> list CWD entries, filter by "fo"
 fn path_completions(prefix: &str, limit: usize, dirs_only: bool) -> Vec<CompletionEntry> {
     // Expand leading ~ to home directory
     let expanded;
@@ -237,4 +200,270 @@ fn path_completions(prefix: &str, limit: usize, dirs_only: bool) -> Vec<Completi
 
     results.sort_by(|a, b| a.completion.cmp(&b.completion));
     results
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::config::TestConfig;
+    use crate::source::MockSource;
+    use crate::store::MemStore;
+
+    // ── classify_context tests (existing) ──────────────────────────
+
+    #[test]
+    fn classify_cd_is_directory_nav() {
+        assert_eq!(
+            classify_context("cd", "/ni"),
+            CompletionContext::DirectoryNav
+        );
+    }
+
+    #[test]
+    fn classify_pushd_is_directory_nav() {
+        assert_eq!(
+            classify_context("pushd", ""),
+            CompletionContext::DirectoryNav
+        );
+    }
+
+    #[test]
+    fn classify_z_is_directory_nav() {
+        assert_eq!(
+            classify_context("z", "foo"),
+            CompletionContext::DirectoryNav
+        );
+    }
+
+    #[test]
+    fn classify_path_prefix() {
+        assert_eq!(
+            classify_context("ls", "/etc"),
+            CompletionContext::PathCompletion
+        );
+        assert_eq!(
+            classify_context("cat", "~/"),
+            CompletionContext::PathCompletion
+        );
+        assert_eq!(
+            classify_context("vim", "./src"),
+            CompletionContext::PathCompletion
+        );
+        assert_eq!(
+            classify_context("rm", "../foo"),
+            CompletionContext::PathCompletion
+        );
+    }
+
+    #[test]
+    fn classify_flag_prefix() {
+        assert_eq!(
+            classify_context("git", "--ver"),
+            CompletionContext::FlagCompletion
+        );
+        assert_eq!(
+            classify_context("ls", "-l"),
+            CompletionContext::FlagCompletion
+        );
+    }
+
+    #[test]
+    fn classify_command_arg() {
+        assert_eq!(
+            classify_context("git", "commit"),
+            CompletionContext::CommandArg
+        );
+        assert_eq!(
+            classify_context("kubectl", "get"),
+            CompletionContext::CommandArg
+        );
+    }
+
+    // ── trait-based complete() tests ───────────────────────────────
+
+    #[test]
+    fn complete_empty_buffer_returns_nothing() {
+        let store = MemStore::new();
+        let cfg = TestConfig::default();
+        let results = complete("", 0, &store, &cfg).unwrap();
+        assert!(results.is_empty());
+    }
+
+    #[test]
+    fn complete_queries_store() {
+        let store = MemStore::new();
+        store
+            .insert(&CompletionEntry {
+                command: "git".into(),
+                completion: "commit".into(),
+                description: "Record changes".into(),
+                source: "fish".into(),
+            })
+            .unwrap();
+        store
+            .insert(&CompletionEntry {
+                command: "git".into(),
+                completion: "config".into(),
+                description: "Get/set options".into(),
+                source: "fish".into(),
+            })
+            .unwrap();
+
+        let cfg = TestConfig {
+            index_path: false,
+            ..TestConfig::default()
+        };
+        let results = complete("git co", 6, &store, &cfg).unwrap();
+        assert_eq!(results.len(), 2);
+        assert!(results.iter().any(|r| r.completion == "commit"));
+        assert!(results.iter().any(|r| r.completion == "config"));
+    }
+
+    #[test]
+    fn complete_flag_prefix() {
+        let store = MemStore::new();
+        store
+            .insert(&CompletionEntry {
+                command: "git".into(),
+                completion: "--verbose".into(),
+                description: "Be verbose".into(),
+                source: "fish".into(),
+            })
+            .unwrap();
+
+        let cfg = TestConfig {
+            index_path: false,
+            ..TestConfig::default()
+        };
+        let results = complete("git --ver", 9, &store, &cfg).unwrap();
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].completion, "--verbose");
+    }
+
+    #[test]
+    fn complete_respects_max_results() {
+        let store = MemStore::new();
+        for i in 0..20 {
+            store
+                .insert(&CompletionEntry {
+                    command: "test".into(),
+                    completion: format!("opt-{i:02}"),
+                    description: String::new(),
+                    source: "mock".into(),
+                })
+                .unwrap();
+        }
+
+        let cfg = TestConfig {
+            max_results: 5,
+            index_path: false,
+            ..TestConfig::default()
+        };
+        let results = complete("test o", 6, &store, &cfg).unwrap();
+        assert!(results.len() <= 5);
+    }
+
+    #[test]
+    fn complete_no_path_when_disabled() {
+        let store = MemStore::new();
+        let cfg = TestConfig {
+            index_path: false,
+            ..TestConfig::default()
+        };
+        // cd normally triggers directory nav, but with index_path=false it should
+        // fall through and return nothing (no stored completions either).
+        let results = complete("cd /tm", 6, &store, &cfg).unwrap();
+        assert!(results.is_empty());
+    }
+
+    // ── index_sources tests ───────────────────────────────────────
+
+    #[test]
+    fn index_sources_inserts_entries() {
+        let store = MemStore::new();
+        let source = MockSource {
+            name: "mock".into(),
+            data: vec![
+                CompletionEntry {
+                    command: "git".into(),
+                    completion: "commit".into(),
+                    description: "Record changes".into(),
+                    source: "mock".into(),
+                },
+                CompletionEntry {
+                    command: "git".into(),
+                    completion: "push".into(),
+                    description: "Update remote".into(),
+                    source: "mock".into(),
+                },
+            ],
+        };
+        index_sources(&store, &[&source as &dyn CompletionSource]).unwrap();
+        assert_eq!(store.count().unwrap(), 2);
+    }
+
+    #[test]
+    fn index_sources_multiple_sources() {
+        let store = MemStore::new();
+        let s1 = MockSource {
+            name: "fish".into(),
+            data: vec![CompletionEntry {
+                command: "git".into(),
+                completion: "commit".into(),
+                description: String::new(),
+                source: "fish".into(),
+            }],
+        };
+        let s2 = MockSource {
+            name: "man".into(),
+            data: vec![CompletionEntry {
+                command: "ls".into(),
+                completion: "-l".into(),
+                description: "Long listing".into(),
+                source: "man".into(),
+            }],
+        };
+        index_sources(
+            &store,
+            &[&s1 as &dyn CompletionSource, &s2 as &dyn CompletionSource],
+        )
+        .unwrap();
+        assert_eq!(store.count().unwrap(), 2);
+    }
+
+    #[test]
+    fn index_sources_empty_sources() {
+        let store = MemStore::new();
+        let empty: Vec<&dyn CompletionSource> = Vec::new();
+        index_sources(&store, &empty).unwrap();
+        assert_eq!(store.count().unwrap(), 0);
+    }
+
+    #[test]
+    fn index_sources_cached_populates_store() {
+        use crate::cache::{FixedFingerprinter, MemCache};
+
+        let store = MemStore::new();
+        let cache = MemCache::empty();
+        let fp = FixedFingerprinter(42);
+        let source = MockSource {
+            name: "mock".into(),
+            data: vec![CompletionEntry {
+                command: "cargo".into(),
+                completion: "build".into(),
+                description: "Compile".into(),
+                source: "mock".into(),
+            }],
+        };
+        index_sources_cached(
+            &store,
+            &[&source as &dyn CompletionSource],
+            &cache,
+            &fp,
+        )
+        .unwrap();
+        assert_eq!(store.count().unwrap(), 1);
+        // Cache should now be populated
+        assert!(cache.load().is_some());
+    }
 }

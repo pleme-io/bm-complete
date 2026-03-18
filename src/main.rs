@@ -1,11 +1,9 @@
-mod completions;
-mod config;
-mod daemon;
-mod store;
+use bm_complete::{completions, config, daemon, engine, source, store};
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
 use std::path::PathBuf;
+use std::sync::Arc;
 
 #[derive(Parser)]
 #[command(
@@ -58,21 +56,30 @@ async fn main() -> Result<()> {
     match cli.command {
         Command::Daemon { socket, config } => {
             let cfg = config::load(config.as_deref())?;
-            daemon::run(&socket, cfg).await
+            let eng = engine::DefaultEngine::new(cfg)?;
+            let eng: Arc<dyn engine::CompletionEngine> = Arc::new(eng);
+            daemon::run(&socket, eng).await
         }
         Command::Complete { buffer, position } => {
             let pos = position.unwrap_or(buffer.len());
             let cfg = config::Config::default();
-            let store = store::CompletionStore::open_or_create()?;
-            let results = completions::complete(&buffer, pos, &store, &cfg)?;
+            let st = store::SqliteStore::open_or_create()?;
+            let results = completions::complete(&buffer, pos, &st, &cfg)?;
             for r in results {
                 println!("{}", serde_json::to_string(&r)?);
             }
             Ok(())
         }
         Command::Index { fish_dir } => {
-            let store = store::CompletionStore::open_or_create()?;
-            completions::index_sources(&store, fish_dir.as_deref())?;
+            let st = store::SqliteStore::open_or_create()?;
+            let dirs = if let Some(dir) = &fish_dir {
+                vec![dir.clone()]
+            } else {
+                source::FishSource::default_dirs()
+            };
+            let fish = source::FishSource::new(dirs);
+            let sources: Vec<&dyn source::CompletionSource> = vec![&fish];
+            completions::index_sources(&st, &sources)?;
             println!("indexing complete");
             Ok(())
         }
