@@ -4,7 +4,7 @@
 
 ```bash
 cargo build          # compile
-cargo test           # 40 unit + 4 integration tests
+cargo test           # 50 unit + 4 integration tests
 cargo check          # type-check only
 ```
 
@@ -33,8 +33,8 @@ Daemon (Unix socket) ← CompletionEngine → completions::complete()
 |--------|---------|
 | `src/store.rs` | `Store` trait + `SqliteStore` (SQLite) + `MemStore` (testing) |
 | `src/config.rs` | `CompletionConfig` trait + `Config` (figment YAML/env) + `TestConfig` |
-| `src/completions.rs` | Core logic: `complete()`, `index_sources()`, `index_sources_cached()`, context classification |
-| `src/engine.rs` | `CompletionEngine` trait + `DefaultEngine` (`Mutex<SqliteStore>` + `Config`) |
+| `src/completions.rs` | Core logic: `complete()`, `index_sources()`, `index_sources_cached()`, context classification, `PathProvider` trait + `FsPathProvider` + `DirEntry` |
+| `src/engine.rs` | `CompletionEngine` trait + `DefaultEngine` (`SqliteStore` + `Config` + `Arc<dyn PathProvider>`) |
 | `src/daemon.rs` | Unix socket server, accepts `Arc<dyn CompletionEngine>` |
 | `src/source.rs` | `CompletionSource` trait + `FishSource` + `MockSource` |
 | `src/cache.rs` | `CacheStore`/`Fingerprinter` traits + `FsCache`/`FsFingerprinter` + `MemCache` |
@@ -50,6 +50,7 @@ Daemon (Unix socket) ← CompletionEngine → completions::complete()
 - **`CompletionEngine`** — `complete(buffer, position)` → `Vec<CompletionEntry>`
 - **`CompletionSource`** — `name()`, `entries()` — pluggable completion sources
 - **`CacheStore`/`Fingerprinter`** — mtime-based cache invalidation
+- **`PathProvider`** — `list_dir()`, `exists()`, `is_dir()`, `home_dir()` — abstracts filesystem for path completions
 
 ### CLI
 
@@ -77,7 +78,7 @@ index_path: true
 
 ## Design Decisions
 
-- **Trait boundaries everywhere** — `Store`, `CompletionConfig`, `CompletionEngine`, `CompletionSource` all have traits for testability
+- **Trait boundaries everywhere** — `Store`, `CompletionConfig`, `CompletionEngine`, `CompletionSource`, `PathProvider` all have traits for testability; all traits require `Send + Sync`
 - **`MemStore` for fast tests** — in-memory Vec-based store, no SQLite needed
 - **Cache invalidation via fingerprinting** — XOR of mtimes detects when re-indexing is needed
 - **`Mutex<SqliteStore>`** in engine — rusqlite Connection is not Send; low-concurrency, fast queries make Mutex fine
