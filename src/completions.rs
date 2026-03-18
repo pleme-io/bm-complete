@@ -28,6 +28,7 @@ static DIR_NAV_COMMANDS: std::sync::LazyLock<HashSet<&'static str>> =
     });
 
 /// Classify the completion context for a command + prefix.
+#[must_use]
 pub fn classify_context(command: &str, prefix: &str) -> CompletionContext {
     // Tier 1: O(1) directory navigation commands
     if DIR_NAV_COMMANDS.contains(command) {
@@ -465,5 +466,74 @@ mod tests {
         assert_eq!(store.count().unwrap(), 1);
         // Cache should now be populated
         assert!(cache.load().is_some());
+    }
+
+    #[test]
+    fn path_completions_returns_dirs() {
+        let dir = tempfile::tempdir().unwrap();
+        // Create a file and a subdirectory inside the tempdir
+        std::fs::write(dir.path().join("hello.txt"), "content").unwrap();
+        std::fs::create_dir(dir.path().join("subdir")).unwrap();
+
+        let prefix = format!("{}/", dir.path().display());
+        let results = path_completions(&prefix, 50, false);
+
+        // Should contain both file and directory
+        assert!(
+            results.iter().any(|r| r.completion.ends_with("subdir/")),
+            "should contain subdir/ entry: {results:?}"
+        );
+        assert!(
+            results.iter().any(|r| r.completion.ends_with("hello.txt")),
+            "should contain hello.txt entry: {results:?}"
+        );
+
+        // Directory entries should have "/" suffix
+        let dir_entry = results
+            .iter()
+            .find(|r| r.completion.contains("subdir"))
+            .expect("subdir entry should exist");
+        assert!(
+            dir_entry.completion.ends_with('/'),
+            "directory completions should end with /"
+        );
+        assert_eq!(dir_entry.description, "directory");
+
+        let file_entry = results
+            .iter()
+            .find(|r| r.completion.contains("hello.txt"))
+            .expect("hello.txt entry should exist");
+        assert!(
+            !file_entry.completion.ends_with('/'),
+            "file completions should not end with /"
+        );
+        assert_eq!(file_entry.description, "file");
+    }
+
+    #[test]
+    fn path_completions_hidden_filtered() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join(".hidden"), "secret").unwrap();
+        std::fs::write(dir.path().join("visible.txt"), "public").unwrap();
+
+        // Without dot prefix — hidden files should be excluded
+        let prefix = format!("{}/", dir.path().display());
+        let results = path_completions(&prefix, 50, false);
+        assert!(
+            !results.iter().any(|r| r.completion.contains(".hidden")),
+            "hidden files should be excluded when prefix doesn't start with '.': {results:?}"
+        );
+        assert!(
+            results.iter().any(|r| r.completion.contains("visible.txt")),
+            "visible files should be included: {results:?}"
+        );
+
+        // With dot prefix — hidden files should be included
+        let dot_prefix = format!("{}/.h", dir.path().display());
+        let results = path_completions(&dot_prefix, 50, false);
+        assert!(
+            results.iter().any(|r| r.completion.contains(".hidden")),
+            "hidden files should be included when prefix starts with '.': {results:?}"
+        );
     }
 }

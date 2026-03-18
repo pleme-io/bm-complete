@@ -11,13 +11,13 @@ pub struct CompiledCache {
 }
 
 /// Trait for cache storage — abstracts filesystem for testability.
-pub trait CacheStore {
+pub trait CacheStore: Send + Sync {
     fn load(&self) -> Option<CompiledCache>;
     fn save(&self, cache: &CompiledCache) -> anyhow::Result<()>;
 }
 
 /// Trait for fingerprinting — abstracts filesystem stat calls.
-pub trait Fingerprinter {
+pub trait Fingerprinter: Send + Sync {
     fn fingerprint(&self) -> u64;
 }
 
@@ -92,28 +92,33 @@ fn mtime_nanos(t: std::time::SystemTime) -> u64 {
 
 /// In-memory cache for testing.
 pub struct MemCache {
-    pub data: std::cell::RefCell<Option<CompiledCache>>,
+    pub data: std::sync::Mutex<Option<CompiledCache>>,
 }
 
 impl MemCache {
     #[must_use]
     pub fn empty() -> Self {
         Self {
-            data: std::cell::RefCell::new(None),
+            data: std::sync::Mutex::new(None),
         }
     }
 }
 
 impl CacheStore for MemCache {
     fn load(&self) -> Option<CompiledCache> {
-        self.data.borrow().as_ref().map(|c| CompiledCache {
+        let guard = self.data.lock().ok()?;
+        guard.as_ref().map(|c| CompiledCache {
             fingerprint: c.fingerprint,
             entries: c.entries.clone(),
         })
     }
 
     fn save(&self, cache: &CompiledCache) -> anyhow::Result<()> {
-        *self.data.borrow_mut() = Some(CompiledCache {
+        let mut guard = self
+            .data
+            .lock()
+            .map_err(|e| anyhow::anyhow!("MemCache mutex poisoned: {e}"))?;
+        *guard = Some(CompiledCache {
             fingerprint: cache.fingerprint,
             entries: cache.entries.clone(),
         });
@@ -224,5 +229,59 @@ mod tests {
     fn fixed_fingerprinter() {
         let fp = FixedFingerprinter(12345);
         assert_eq!(fp.fingerprint(), 12345);
+    }
+
+    #[test]
+    fn fs_cache_roundtrip() {
+        let dir = tempfile::tempdir().unwrap();
+        let cache_path = dir.path().join("compiled.json");
+        let cache = FsCache {
+            path: cache_path.clone(),
+        };
+
+        // Initially empty
+        assert!(cache.load().is_none());
+
+        // Save a compiled cache
+        let original = CompiledCache {
+            fingerprint: 42,
+            entries: vec![CompletionEntry {
+                command: "git".into(),
+                completion: "commit".into(),
+                description: "Record changes".into(),
+                source: "fish".into(),
+            }],
+        };
+        cache.save(&original).unwrap();
+
+        // Load it back and verify
+        let loaded = cache.load().expect("cache should exist after save");
+        assert_eq!(loaded.fingerprint, 42);
+        assert_eq!(loaded.entries.len(), 1);
+        assert_eq!(loaded.entries[0].command, "git");
+        assert_eq!(loaded.entries[0].completion, "commit");
+        assert_eq!(loaded.entries[0].description, "Record changes");
+        assert_eq!(loaded.entries[0].source, "fish");
+    }
+
+    #[test]
+    fn fs_fingerprinter_changes_on_file_modify() {
+        let dir = tempfile::tempdir().unwrap();
+        let file_path = dir.path().join("test.fish");
+        std::fs::write(&file_path, "original content").unwrap();
+
+        let fp = FsFingerprinter {
+            dirs: vec![dir.path().to_path_buf()],
+        };
+
+        let fp1 = fp.fingerprint();
+
+        // Modify the file — sleep briefly to ensure different mtime
+        std::thread::sleep(std::time::Duration::from_millis(50));
+        std::fs::write(&file_path, "modified content").unwrap();
+
+        let fp2 = fp.fingerprint();
+
+        assert_ne!(fp1, fp2, "fingerprint should change when file is modified");
     }
 }

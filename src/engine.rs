@@ -2,7 +2,6 @@ use crate::completions;
 use crate::config::Config;
 use crate::store::{CompletionEntry, SqliteStore};
 use anyhow::Result;
-use std::sync::Mutex;
 
 /// Trait for the top-level completion engine — one method, easy to mock.
 pub trait CompletionEngine: Send + Sync {
@@ -12,7 +11,7 @@ pub trait CompletionEngine: Send + Sync {
 
 /// Default engine backed by [`SqliteStore`] and [`Config`].
 pub struct DefaultEngine {
-    store: Mutex<SqliteStore>,
+    store: SqliteStore,
     config: Config,
 }
 
@@ -20,15 +19,13 @@ impl DefaultEngine {
     /// Create a new engine, opening the default SQLite database.
     pub fn new(config: Config) -> Result<Self> {
         let store = SqliteStore::open_or_create()?;
-        Ok(Self {
-            store: Mutex::new(store),
-            config,
-        })
+        Ok(Self { store, config })
     }
 
     /// Access the underlying store (e.g. for indexing).
-    pub fn store(&self) -> std::sync::MutexGuard<'_, SqliteStore> {
-        self.store.lock().expect("store mutex poisoned")
+    #[must_use]
+    pub fn store(&self) -> &SqliteStore {
+        &self.store
     }
 
     /// Access the configuration.
@@ -40,8 +37,7 @@ impl DefaultEngine {
 
 impl CompletionEngine for DefaultEngine {
     fn complete(&self, buffer: &str, position: usize) -> Result<Vec<CompletionEntry>> {
-        let store = self.store.lock().expect("store mutex poisoned");
-        completions::complete(buffer, position, &*store, &self.config)
+        completions::complete(buffer, position, &self.store, &self.config)
     }
 }
 
@@ -74,6 +70,39 @@ mod tests {
         let results = engine.complete("git co", 6).unwrap();
         assert_eq!(results.len(), 1);
         assert_eq!(results[0].completion, "commit");
+    }
+
+    /// Verify that a poisoned mutex produces a recoverable error via
+    /// `map_err` rather than a panic — the same pattern used inside
+    /// `SqliteStore`, `MemStore`, and `MemCache`.
+    #[test]
+    fn mutex_poisoning_returns_error() {
+        use std::sync::{Arc, Mutex};
+
+        let store = Arc::new(Mutex::new(0_u32));
+        let store_clone = Arc::clone(&store);
+
+        // Poison the mutex by panicking while holding the lock
+        let handle = std::thread::spawn(move || {
+            let _guard = store_clone.lock().unwrap();
+            panic!("intentional panic to poison mutex");
+        });
+        let _ = handle.join(); // join returns Err because the thread panicked
+
+        // Verify the mutex is poisoned
+        assert!(store.lock().is_err(), "mutex should be poisoned");
+
+        // The .map_err pattern used throughout the codebase converts
+        // PoisonError into an anyhow::Error instead of panicking.
+        let result: Result<std::sync::MutexGuard<'_, u32>> = store
+            .lock()
+            .map_err(|e| anyhow::anyhow!("store mutex poisoned: {e}"));
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(
+            err_msg.contains("store mutex poisoned"),
+            "error message should mention poisoned mutex, got: {err_msg}"
+        );
     }
 
     #[test]

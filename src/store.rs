@@ -1,8 +1,8 @@
 use anyhow::{Context, Result};
 use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
-use std::cell::RefCell;
 use std::path::Path;
+use std::sync::Mutex;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct CompletionEntry {
@@ -12,8 +12,19 @@ pub struct CompletionEntry {
     pub source: String, // "fish", "man", "help", "path", "custom"
 }
 
+impl Default for CompletionEntry {
+    fn default() -> Self {
+        Self {
+            command: String::new(),
+            completion: String::new(),
+            description: String::new(),
+            source: "custom".into(),
+        }
+    }
+}
+
 /// Abstraction over completion storage backends.
-pub trait Store {
+pub trait Store: Send + Sync {
     /// Insert (or replace) a single completion entry.
     fn insert(&self, entry: &CompletionEntry) -> Result<()>;
     /// Query completions for `command` whose completion text starts with `prefix`.
@@ -27,7 +38,7 @@ pub trait Store {
 // ═══════════════════════════════════════════════════════════════════
 
 pub struct SqliteStore {
-    conn: Connection,
+    conn: Mutex<Connection>,
 }
 
 impl SqliteStore {
@@ -58,13 +69,19 @@ impl SqliteStore {
             CREATE INDEX IF NOT EXISTS idx_completions_prefix ON completions(completion);",
         )
         .context("failed to create tables")?;
-        Ok(Self { conn })
+        Ok(Self {
+            conn: Mutex::new(conn),
+        })
     }
 }
 
 impl Store for SqliteStore {
     fn insert(&self, entry: &CompletionEntry) -> Result<()> {
-        self.conn.execute(
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| anyhow::anyhow!("SqliteStore mutex poisoned: {e}"))?;
+        conn.execute(
             "INSERT OR REPLACE INTO completions (command, completion, description, source)
              VALUES (?1, ?2, ?3, ?4)",
             rusqlite::params![
@@ -83,7 +100,11 @@ impl Store for SqliteStore {
         prefix: &str,
         limit: usize,
     ) -> Result<Vec<CompletionEntry>> {
-        let mut stmt = self.conn.prepare(
+        let conn = self
+            .conn
+            .lock()
+            .map_err(|e| anyhow::anyhow!("SqliteStore mutex poisoned: {e}"))?;
+        let mut stmt = conn.prepare(
             "SELECT command, completion, description, source FROM completions
              WHERE command = ?1 AND completion LIKE ?2
              ORDER BY completion
@@ -107,9 +128,12 @@ impl Store for SqliteStore {
     }
 
     fn count(&self) -> Result<usize> {
-        let count: usize = self
+        let conn = self
             .conn
-            .query_row("SELECT COUNT(*) FROM completions", [], |row| row.get(0))?;
+            .lock()
+            .map_err(|e| anyhow::anyhow!("SqliteStore mutex poisoned: {e}"))?;
+        let count: usize =
+            conn.query_row("SELECT COUNT(*) FROM completions", [], |row| row.get(0))?;
         Ok(count)
     }
 }
@@ -120,14 +144,14 @@ impl Store for SqliteStore {
 
 /// Simple `Vec`-backed store for unit tests.
 pub struct MemStore {
-    entries: RefCell<Vec<CompletionEntry>>,
+    entries: Mutex<Vec<CompletionEntry>>,
 }
 
 impl MemStore {
     #[must_use]
     pub fn new() -> Self {
         Self {
-            entries: RefCell::new(Vec::new()),
+            entries: Mutex::new(Vec::new()),
         }
     }
 }
@@ -140,7 +164,10 @@ impl Default for MemStore {
 
 impl Store for MemStore {
     fn insert(&self, entry: &CompletionEntry) -> Result<()> {
-        let mut data = self.entries.borrow_mut();
+        let mut data = self
+            .entries
+            .lock()
+            .map_err(|e| anyhow::anyhow!("MemStore mutex poisoned: {e}"))?;
         // Replace existing entry with same (command, completion, source)
         data.retain(|e| {
             !(e.command == entry.command
@@ -157,7 +184,10 @@ impl Store for MemStore {
         prefix: &str,
         limit: usize,
     ) -> Result<Vec<CompletionEntry>> {
-        let data = self.entries.borrow();
+        let data = self
+            .entries
+            .lock()
+            .map_err(|e| anyhow::anyhow!("MemStore mutex poisoned: {e}"))?;
         let mut results: Vec<CompletionEntry> = data
             .iter()
             .filter(|e| e.command == command && e.completion.starts_with(prefix))
@@ -169,7 +199,11 @@ impl Store for MemStore {
     }
 
     fn count(&self) -> Result<usize> {
-        Ok(self.entries.borrow().len())
+        let data = self
+            .entries
+            .lock()
+            .map_err(|e| anyhow::anyhow!("MemStore mutex poisoned: {e}"))?;
+        Ok(data.len())
     }
 }
 

@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use std::path::Path;
 
 /// Trait abstracting the configuration surface needed by the completion engine.
-pub trait CompletionConfig {
+pub trait CompletionConfig: Send + Sync {
     /// Maximum number of results to return per query.
     fn max_results(&self) -> usize;
     /// Whether to include filesystem path completions.
@@ -68,15 +68,18 @@ impl CompletionConfig for Config {
     }
 }
 
+#[must_use]
 fn default_cache_dir() -> String {
     dirs::cache_dir()
         .map(|d| d.join("bm-complete").to_string_lossy().into_owned())
         .unwrap_or_else(|| "$HOME/.cache/bm-complete".into())
 }
 
+#[must_use]
 fn default_max_results() -> usize {
     50
 }
+#[must_use]
 fn default_true() -> bool {
     true
 }

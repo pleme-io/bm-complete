@@ -4,7 +4,7 @@ use std::path::{Path, PathBuf};
 
 /// Pluggable completion source — each implementation knows how to
 /// extract completions from one system (fish, man, --help, etc.).
-pub trait CompletionSource {
+pub trait CompletionSource: Send + Sync {
     /// Human-readable name for this source.
     fn name(&self) -> &str;
     /// Extract all completion entries from this source.
@@ -22,6 +22,7 @@ impl FishSource {
     }
 
     /// Default fish completion directories.
+    #[must_use]
     pub fn default_dirs() -> Vec<PathBuf> {
         [
             "/usr/share/fish/completions",
@@ -34,6 +35,7 @@ impl FishSource {
         .collect()
     }
 
+    #[must_use]
     fn parse_file(path: &Path) -> Vec<CompletionEntry> {
         let command = match path.file_stem().and_then(|s| s.to_str()) {
             Some(c) if !c.is_empty() => c.to_string(),
@@ -108,6 +110,12 @@ impl FishSource {
         }
 
         entries
+    }
+}
+
+impl Default for FishSource {
+    fn default() -> Self {
+        Self::new(Self::default_dirs())
     }
 }
 
