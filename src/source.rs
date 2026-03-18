@@ -12,6 +12,7 @@ pub trait CompletionSource: Send + Sync {
 }
 
 /// Fish shell completion files source.
+#[derive(Debug, PartialEq)]
 pub struct FishSource {
     pub dirs: Vec<PathBuf>,
 }

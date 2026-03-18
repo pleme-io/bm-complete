@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 // ═══════════════════════════════════════════════════════════════════
 
 /// A single directory entry returned by [`PathProvider::list_dir`].
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct DirEntry {
     pub name: String,
     pub is_dir: bool,
