@@ -4,7 +4,91 @@ use crate::source::CompletionSource;
 use crate::store::{CompletionEntry, Store};
 use anyhow::Result;
 use std::collections::HashSet;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+
+// ═══════════════════════════════════════════════════════════════════
+// PathProvider trait — abstracts filesystem I/O for path completions
+// ═══════════════════════════════════════════════════════════════════
+
+/// A single directory entry returned by [`PathProvider::list_dir`].
+#[derive(Debug, Clone)]
+pub struct DirEntry {
+    pub name: String,
+    pub is_dir: bool,
+}
+
+/// Abstraction over filesystem operations needed by path completion.
+///
+/// Implementations provide directory listing, existence checks, and home
+/// directory resolution. The trait is object-safe for dynamic dispatch.
+pub trait PathProvider: Send + Sync {
+    /// List entries in a directory. Returns an error if the directory
+    /// cannot be read (does not exist, permission denied, etc.).
+    fn list_dir(&self, dir: &Path) -> Result<Vec<DirEntry>>;
+    /// Check whether a path exists.
+    fn exists(&self, path: &Path) -> bool;
+    /// Check whether a path is a directory.
+    fn is_dir(&self, path: &Path) -> bool;
+    /// Return the user's home directory, if known.
+    fn home_dir(&self) -> Option<PathBuf>;
+}
+
+/// Real filesystem [`PathProvider`].
+pub struct FsPathProvider;
+
+impl PathProvider for FsPathProvider {
+    fn list_dir(&self, dir: &Path) -> Result<Vec<DirEntry>> {
+        let rd = std::fs::read_dir(dir)?;
+        let mut entries = Vec::new();
+        for entry in rd.flatten() {
+            let name = entry.file_name().to_string_lossy().into_owned();
+            let is_dir = entry.file_type().map(|t| t.is_dir()).unwrap_or(false);
+            entries.push(DirEntry { name, is_dir });
+        }
+        Ok(entries)
+    }
+
+    fn exists(&self, path: &Path) -> bool {
+        path.exists()
+    }
+
+    fn is_dir(&self, path: &Path) -> bool {
+        path.is_dir()
+    }
+
+    fn home_dir(&self) -> Option<PathBuf> {
+        dirs::home_dir()
+    }
+}
+
+/// In-memory [`PathProvider`] for tests.
+#[cfg(test)]
+pub struct MockPathProvider {
+    pub entries: std::collections::HashMap<PathBuf, Vec<DirEntry>>,
+    pub home: Option<PathBuf>,
+}
+
+#[cfg(test)]
+impl PathProvider for MockPathProvider {
+    fn list_dir(&self, dir: &Path) -> Result<Vec<DirEntry>> {
+        self.entries
+            .get(dir)
+            .cloned()
+            .ok_or_else(|| anyhow::anyhow!("no such directory: {}", dir.display()))
+    }
+
+    fn exists(&self, path: &Path) -> bool {
+        self.entries.contains_key(path)
+    }
+
+    fn is_dir(&self, path: &Path) -> bool {
+        self.entries.contains_key(path)
+    }
+
+    fn home_dir(&self) -> Option<PathBuf> {
+        self.home.clone()
+    }
+}
 
 /// Context classification for completion behavior.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -55,6 +139,7 @@ pub fn complete(
     _position: usize,
     store: &dyn Store,
     cfg: &dyn CompletionConfig,
+    paths: &dyn PathProvider,
 ) -> Result<Vec<CompletionEntry>> {
     let words: Vec<&str> = buffer.split_whitespace().collect();
     if words.is_empty() {
@@ -72,12 +157,12 @@ pub fn complete(
 
     // Directory navigation -> path completion (dirs only)
     if ctx == CompletionContext::DirectoryNav && cfg.index_path() {
-        return Ok(path_completions(prefix, cfg.max_results(), true));
+        return Ok(path_completions(prefix, cfg.max_results(), true, paths));
     }
 
     // Path-shaped prefix -> path completion (files + dirs)
     if ctx == CompletionContext::PathCompletion && cfg.index_path() {
-        return Ok(path_completions(prefix, cfg.max_results(), false));
+        return Ok(path_completions(prefix, cfg.max_results(), false, paths));
     }
 
     // Query stored completions
@@ -85,7 +170,7 @@ pub fn complete(
 
     // If no stored completions, try path completion
     if results.is_empty() && cfg.index_path() {
-        results = path_completions(prefix, cfg.max_results(), false);
+        results = path_completions(prefix, cfg.max_results(), false, paths);
     }
 
     Ok(results)
@@ -134,11 +219,16 @@ pub fn index_sources_cached(
 ///   "src/"    -> list src/ contents, no filter (trailing slash = descend)
 ///   "src/ma"  -> list src/ contents, filter by "ma"
 ///   "fo"      -> list CWD entries, filter by "fo"
-fn path_completions(prefix: &str, limit: usize, dirs_only: bool) -> Vec<CompletionEntry> {
+fn path_completions(
+    prefix: &str,
+    limit: usize,
+    dirs_only: bool,
+    paths: &dyn PathProvider,
+) -> Vec<CompletionEntry> {
     // Expand leading ~ to home directory
     let expanded;
     let prefix = if prefix.starts_with('~') {
-        if let Some(home) = dirs::home_dir() {
+        if let Some(home) = paths.home_dir() {
             expanded = format!("{}{}", home.display(), &prefix[1..]);
             &expanded
         } else {
@@ -163,16 +253,15 @@ fn path_completions(prefix: &str, limit: usize, dirs_only: bool) -> Vec<Completi
     };
 
     let mut results = Vec::new();
-    let Ok(entries) = std::fs::read_dir(&dir) else {
+    let Ok(entries) = paths.list_dir(&dir) else {
         return results;
     };
 
-    for entry in entries.flatten() {
+    for entry in &entries {
         if results.len() >= limit {
             break;
         }
-        let name = entry.file_name();
-        let name_str = name.to_string_lossy();
+        let name_str = &entry.name;
 
         // Skip hidden files unless the filter starts with '.'
         if name_str.starts_with('.') && !file_prefix.starts_with('.') {
@@ -183,18 +272,17 @@ fn path_completions(prefix: &str, limit: usize, dirs_only: bool) -> Vec<Completi
             continue;
         }
 
-        let is_dir = entry.file_type().map(|t| t.is_dir()).unwrap_or(false);
-        if dirs_only && !is_dir {
+        if dirs_only && !entry.is_dir {
             continue;
         }
 
-        let suffix = if is_dir { "/" } else { "" };
+        let suffix = if entry.is_dir { "/" } else { "" };
         let completion = format!("{base}{name_str}{suffix}");
 
         results.push(CompletionEntry {
             command: String::new(),
             completion,
-            description: if is_dir { "directory" } else { "file" }.into(),
+            description: if entry.is_dir { "directory" } else { "file" }.into(),
             source: "path".into(),
         });
     }
@@ -209,6 +297,12 @@ mod tests {
     use crate::config::TestConfig;
     use crate::source::MockSource;
     use crate::store::MemStore;
+    use std::collections::HashMap;
+
+    /// Helper: create an `FsPathProvider` for tests that still use the real FS.
+    fn fs_paths() -> FsPathProvider {
+        FsPathProvider
+    }
 
     // ── classify_context tests (existing) ──────────────────────────
 
@@ -286,7 +380,7 @@ mod tests {
     fn complete_empty_buffer_returns_nothing() {
         let store = MemStore::new();
         let cfg = TestConfig::default();
-        let results = complete("", 0, &store, &cfg).unwrap();
+        let results = complete("", 0, &store, &cfg, &fs_paths()).unwrap();
         assert!(results.is_empty());
     }
 
@@ -314,7 +408,7 @@ mod tests {
             index_path: false,
             ..TestConfig::default()
         };
-        let results = complete("git co", 6, &store, &cfg).unwrap();
+        let results = complete("git co", 6, &store, &cfg, &fs_paths()).unwrap();
         assert_eq!(results.len(), 2);
         assert!(results.iter().any(|r| r.completion == "commit"));
         assert!(results.iter().any(|r| r.completion == "config"));
@@ -336,7 +430,7 @@ mod tests {
             index_path: false,
             ..TestConfig::default()
         };
-        let results = complete("git --ver", 9, &store, &cfg).unwrap();
+        let results = complete("git --ver", 9, &store, &cfg, &fs_paths()).unwrap();
         assert_eq!(results.len(), 1);
         assert_eq!(results[0].completion, "--verbose");
     }
@@ -360,7 +454,7 @@ mod tests {
             index_path: false,
             ..TestConfig::default()
         };
-        let results = complete("test o", 6, &store, &cfg).unwrap();
+        let results = complete("test o", 6, &store, &cfg, &fs_paths()).unwrap();
         assert!(results.len() <= 5);
     }
 
@@ -373,7 +467,7 @@ mod tests {
         };
         // cd normally triggers directory nav, but with index_path=false it should
         // fall through and return nothing (no stored completions either).
-        let results = complete("cd /tm", 6, &store, &cfg).unwrap();
+        let results = complete("cd /tm", 6, &store, &cfg, &fs_paths()).unwrap();
         assert!(results.is_empty());
     }
 
@@ -476,7 +570,7 @@ mod tests {
         std::fs::create_dir(dir.path().join("subdir")).unwrap();
 
         let prefix = format!("{}/", dir.path().display());
-        let results = path_completions(&prefix, 50, false);
+        let results = path_completions(&prefix, 50, false, &fs_paths());
 
         // Should contain both file and directory
         assert!(
@@ -518,7 +612,7 @@ mod tests {
 
         // Without dot prefix — hidden files should be excluded
         let prefix = format!("{}/", dir.path().display());
-        let results = path_completions(&prefix, 50, false);
+        let results = path_completions(&prefix, 50, false, &fs_paths());
         assert!(
             !results.iter().any(|r| r.completion.contains(".hidden")),
             "hidden files should be excluded when prefix doesn't start with '.': {results:?}"
@@ -530,9 +624,96 @@ mod tests {
 
         // With dot prefix — hidden files should be included
         let dot_prefix = format!("{}/.h", dir.path().display());
-        let results = path_completions(&dot_prefix, 50, false);
+        let results = path_completions(&dot_prefix, 50, false, &fs_paths());
         assert!(
             results.iter().any(|r| r.completion.contains(".hidden")),
+            "hidden files should be included when prefix starts with '.': {results:?}"
+        );
+    }
+
+    // ── MockPathProvider tests ────────────────────────────────────
+
+    #[test]
+    fn path_provider_mock_lists_entries() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("/fake/dir"),
+            vec![
+                DirEntry { name: "alpha.rs".into(), is_dir: false },
+                DirEntry { name: "beta".into(), is_dir: true },
+                DirEntry { name: "gamma.txt".into(), is_dir: false },
+            ],
+        );
+        let mock = MockPathProvider { entries, home: None };
+
+        let results = path_completions("/fake/dir/", 50, false, &mock);
+        assert_eq!(results.len(), 3, "expected 3 entries: {results:?}");
+        assert!(results.iter().any(|r| r.completion.contains("alpha.rs")));
+        assert!(results.iter().any(|r| r.completion.contains("beta")));
+        assert!(results.iter().any(|r| r.completion.contains("gamma.txt")));
+    }
+
+    #[test]
+    fn path_provider_mock_dirs_get_slash() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("/mock"),
+            vec![
+                DirEntry { name: "mydir".into(), is_dir: true },
+                DirEntry { name: "myfile".into(), is_dir: false },
+            ],
+        );
+        let mock = MockPathProvider { entries, home: None };
+
+        let results = path_completions("/mock/", 50, false, &mock);
+        let dir_entry = results
+            .iter()
+            .find(|r| r.completion.contains("mydir"))
+            .expect("mydir entry should exist");
+        assert!(
+            dir_entry.completion.ends_with('/'),
+            "directory completions should end with /: got {:?}",
+            dir_entry.completion
+        );
+
+        let file_entry = results
+            .iter()
+            .find(|r| r.completion.contains("myfile"))
+            .expect("myfile entry should exist");
+        assert!(
+            !file_entry.completion.ends_with('/'),
+            "file completions should not end with /: got {:?}",
+            file_entry.completion
+        );
+    }
+
+    #[test]
+    fn path_provider_mock_hidden_filtered() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("/mock"),
+            vec![
+                DirEntry { name: ".secret".into(), is_dir: false },
+                DirEntry { name: "public.txt".into(), is_dir: false },
+            ],
+        );
+        let mock = MockPathProvider { entries, home: None };
+
+        // Without dot prefix — hidden files should be excluded
+        let results = path_completions("/mock/", 50, false, &mock);
+        assert!(
+            !results.iter().any(|r| r.completion.contains(".secret")),
+            "hidden files should be excluded: {results:?}"
+        );
+        assert!(
+            results.iter().any(|r| r.completion.contains("public.txt")),
+            "visible files should be included: {results:?}"
+        );
+
+        // With dot prefix — hidden files should be included
+        let results = path_completions("/mock/.s", 50, false, &mock);
+        assert!(
+            results.iter().any(|r| r.completion.contains(".secret")),
             "hidden files should be included when prefix starts with '.': {results:?}"
         );
     }

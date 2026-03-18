@@ -122,4 +122,42 @@ mod tests {
         // Should return an empty array (valid JSON) — no panic
         assert!(resp.contains('['));
     }
+
+    #[test]
+    fn handle_request_returns_json_array() {
+        let engine = MockEngine {
+            results: vec![
+                CompletionEntry {
+                    command: "git".into(),
+                    completion: "commit".into(),
+                    description: "Record changes".into(),
+                    source: "mock".into(),
+                },
+                CompletionEntry {
+                    command: "git".into(),
+                    completion: "config".into(),
+                    description: "Get/set options".into(),
+                    source: "mock".into(),
+                },
+            ],
+        };
+        let resp =
+            handle_request(r#"{"buffer": "git co", "position": 6}"#, &engine).unwrap();
+        let parsed: Vec<CompletionEntry> =
+            serde_json::from_str(resp.trim()).expect("response should be valid JSON array");
+        assert_eq!(parsed.len(), 2);
+        assert_eq!(parsed[0].completion, "commit");
+        assert_eq!(parsed[1].completion, "config");
+    }
+
+    #[test]
+    fn handle_request_error_returns_empty() {
+        let engine = MockEngine {
+            results: Vec::new(),
+        };
+        // Malformed JSON — handle_request returns Err, which the caller
+        // converts to an error JSON. Verify the Err path.
+        let result = handle_request("{malformed", &engine);
+        assert!(result.is_err(), "malformed JSON should produce an error");
+    }
 }

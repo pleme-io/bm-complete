@@ -1,7 +1,8 @@
-use crate::completions;
+use crate::completions::{self, FsPathProvider, PathProvider};
 use crate::config::Config;
 use crate::store::{CompletionEntry, SqliteStore};
 use anyhow::Result;
+use std::sync::Arc;
 
 /// Trait for the top-level completion engine — one method, easy to mock.
 pub trait CompletionEngine: Send + Sync {
@@ -13,13 +14,27 @@ pub trait CompletionEngine: Send + Sync {
 pub struct DefaultEngine {
     store: SqliteStore,
     config: Config,
+    path_provider: Arc<dyn PathProvider>,
 }
 
 impl DefaultEngine {
     /// Create a new engine, opening the default SQLite database.
+    /// Uses [`FsPathProvider`] for real filesystem path completions.
     pub fn new(config: Config) -> Result<Self> {
+        Self::with_path_provider(config, Arc::new(FsPathProvider))
+    }
+
+    /// Create a new engine with a custom [`PathProvider`].
+    pub fn with_path_provider(
+        config: Config,
+        path_provider: Arc<dyn PathProvider>,
+    ) -> Result<Self> {
         let store = SqliteStore::open_or_create()?;
-        Ok(Self { store, config })
+        Ok(Self {
+            store,
+            config,
+            path_provider,
+        })
     }
 
     /// Access the underlying store (e.g. for indexing).
@@ -37,7 +52,13 @@ impl DefaultEngine {
 
 impl CompletionEngine for DefaultEngine {
     fn complete(&self, buffer: &str, position: usize) -> Result<Vec<CompletionEntry>> {
-        completions::complete(buffer, position, &self.store, &self.config)
+        completions::complete(
+            buffer,
+            position,
+            &self.store,
+            &self.config,
+            &*self.path_provider,
+        )
     }
 }
 
@@ -122,7 +143,8 @@ mod tests {
             index_path: false,
             ..crate::config::TestConfig::default()
         };
-        let results = completions::complete("git co", 6, &store, &cfg).unwrap();
+        let paths = FsPathProvider;
+        let results = completions::complete("git co", 6, &store, &cfg, &paths).unwrap();
         assert_eq!(results.len(), 1);
         assert_eq!(results[0].completion, "commit");
     }

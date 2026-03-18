@@ -64,7 +64,8 @@ async fn main() -> Result<()> {
             let pos = position.unwrap_or(buffer.len());
             let cfg = config::Config::default();
             let st = store::SqliteStore::open_or_create()?;
-            let results = completions::complete(&buffer, pos, &st, &cfg)?;
+            let paths = completions::FsPathProvider;
+            let results = completions::complete(&buffer, pos, &st, &cfg, &paths)?;
             for r in results {
                 println!("{}", serde_json::to_string(&r)?);
             }
