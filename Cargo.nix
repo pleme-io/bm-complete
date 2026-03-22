@@ -1105,6 +1105,37 @@ rec {
           "serde_impl" = [ "serde" ];
         };
       };
+      "hayai" = rec {
+        crateName = "hayai";
+        version = "0.1.0";
+        edition = "2024";
+        workspace_member = null;
+        src = pkgs.fetchgit {
+          url = "https://github.com/pleme-io/hayai";
+          rev = "5647cd5b7991896c26d3fef0f4347cf2f0bdca36";
+          sha256 = "1vnds6ps1w646imwiwawlafaj2pgf7saxpv93mvp8j2ax09bf9i0";
+        };
+        dependencies = [
+          {
+            name = "anyhow";
+            packageId = "anyhow";
+          }
+          {
+            name = "regex";
+            packageId = "regex";
+          }
+          {
+            name = "serde";
+            packageId = "serde";
+            features = [ "derive" ];
+          }
+          {
+            name = "serde_json";
+            packageId = "serde_json";
+          }
+        ];
+
+      };
       "heck" = rec {
         crateName = "heck";
         version = "0.5.0";
@@ -1691,6 +1722,10 @@ rec {
             name = "figment";
             packageId = "figment";
             features = [ "yaml" "env" ];
+          }
+          {
+            name = "hayai";
+            packageId = "hayai";
           }
           {
             name = "rusqlite";
