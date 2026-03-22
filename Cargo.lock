@@ -354,6 +354,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "hayai"
+version = "0.1.0"
+source = "git+https://github.com/pleme-io/hayai#5647cd5b7991896c26d3fef0f4347cf2f0bdca36"
+dependencies = [
+ "anyhow",
+ "regex",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "heck"
 version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -565,6 +576,7 @@ dependencies = [
  "clap",
  "dirs",
  "figment",
+ "hayai",
  "predicates",
  "rusqlite",
  "serde",

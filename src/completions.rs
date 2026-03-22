@@ -1,4 +1,4 @@
-use crate::cache::{CacheStore, Fingerprinter, resolve_cached};
+use crate::cache::{CacheStore, Fingerprinter, resolve_completions};
 use crate::config::CompletionConfig;
 use crate::source::CompletionSource;
 use crate::store::{CompletionEntry, Store};
@@ -194,10 +194,10 @@ pub fn index_sources(store: &dyn Store, sources: &[&dyn CompletionSource]) -> Re
 pub fn index_sources_cached(
     store: &dyn Store,
     sources: &[&dyn CompletionSource],
-    cache: &dyn CacheStore,
+    cache: &dyn CacheStore<Vec<CompletionEntry>>,
     fp: &dyn Fingerprinter,
 ) -> Result<()> {
-    let entries = resolve_cached(cache, fp, || {
+    let entries = resolve_completions(cache, fp, || {
         let mut all = Vec::new();
         for source in sources {
             all.extend(source.entries()?);

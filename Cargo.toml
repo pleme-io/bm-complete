@@ -33,6 +33,7 @@ rusqlite = { version = "0.32", features = ["bundled"] }
 tree-sitter = "0.25"
 tree-sitter-bash = "0.23"
 dirs = "6.0"
+hayai = { git = "https://github.com/pleme-io/hayai" }
 
 [dev-dependencies]
 tempfile = "3"
