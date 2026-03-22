@@ -57,7 +57,8 @@ impl SqliteStore {
         let conn =
             Connection::open(path).context("failed to open completion database")?;
         conn.execute_batch(
-            "CREATE TABLE IF NOT EXISTS completions (
+            "PRAGMA journal_mode=WAL;
+            CREATE TABLE IF NOT EXISTS completions (
                 id INTEGER PRIMARY KEY,
                 command TEXT NOT NULL,
                 completion TEXT NOT NULL,
