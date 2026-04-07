@@ -4,7 +4,9 @@ use crate::source::CompletionSource;
 use crate::store::{CompletionEntry, Store};
 use anyhow::Result;
 use std::collections::HashSet;
+use std::fmt;
 use std::path::{Path, PathBuf};
+use std::str::FromStr;
 
 // ═══════════════════════════════════════════════════════════════════
 // PathProvider trait — abstracts filesystem I/O for path completions
@@ -105,6 +107,31 @@ pub enum CompletionContext {
     FlagCompletion,
     /// General command argument
     CommandArg,
+}
+
+impl fmt::Display for CompletionContext {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::DirectoryNav => f.write_str("directory-nav"),
+            Self::PathCompletion => f.write_str("path-completion"),
+            Self::FlagCompletion => f.write_str("flag-completion"),
+            Self::CommandArg => f.write_str("command-arg"),
+        }
+    }
+}
+
+impl FromStr for CompletionContext {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "directory-nav" => Ok(Self::DirectoryNav),
+            "path-completion" => Ok(Self::PathCompletion),
+            "flag-completion" => Ok(Self::FlagCompletion),
+            "command-arg" => Ok(Self::CommandArg),
+            other => Err(format!("unknown completion context: {other}")),
+        }
+    }
 }
 
 /// O(1) set of commands that navigate directories.
@@ -1135,6 +1162,27 @@ mod tests {
             home: None,
         };
         assert_eq!(mock_no_home.home_dir(), None);
+    }
+
+    #[test]
+    fn context_display_fromstr_roundtrip() {
+        for ctx in [
+            CompletionContext::DirectoryNav,
+            CompletionContext::PathCompletion,
+            CompletionContext::FlagCompletion,
+            CompletionContext::CommandArg,
+        ] {
+            let s = ctx.to_string();
+            let parsed: CompletionContext = s.parse().unwrap();
+            assert_eq!(parsed, ctx, "Display/FromStr round-trip failed for {ctx:?}");
+        }
+    }
+
+    #[test]
+    fn context_fromstr_invalid() {
+        let result = "bogus".parse::<CompletionContext>();
+        assert!(result.is_err());
+        assert!(result.unwrap_err().contains("unknown"));
     }
 
     #[test]
