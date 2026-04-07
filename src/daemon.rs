@@ -25,7 +25,7 @@ pub async fn run(socket_path: &Path, engine: Arc<dyn CompletionEngine>) -> Resul
     }
 
     let listener = UnixListener::bind(socket_path)
-        .context(format!("failed to bind to {}", socket_path.display()))?;
+        .with_context(|| format!("failed to bind to {}", socket_path.display()))?;
 
     println!("bm-complete daemon listening on {}", socket_path.display());
 
