@@ -500,7 +500,7 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let db = dir.path().join("test.db");
         let store = SqliteStore::open_at(&db).unwrap();
-        crate::testing::validate_store_roundtrip(&store);
+        crate::testing::validate_store_roundtrip(&store).unwrap();
     }
 
     #[test]

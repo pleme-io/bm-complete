@@ -75,24 +75,22 @@ impl From<CompletionEntryBuilder> for CompletionEntry {
 ///
 /// Works with any `Store` implementation.
 ///
-/// # Panics
+/// # Errors
 ///
-/// Panics if the insert or query fails, or if the round-trip result
-/// doesn't match the original entry.
-pub fn validate_store_roundtrip(store: &dyn Store) {
+/// Returns an error if the store's `insert` or `query` fails.
+pub fn validate_store_roundtrip(store: &dyn Store) -> Result<()> {
     let entry = CompletionEntryBuilder::new()
         .command("git")
         .completion("commit")
         .description("Record changes")
         .source("fish")
         .build();
-    store.insert(&entry).expect("insert should succeed");
+    store.insert(&entry)?;
 
-    let results = store
-        .query("git", "co", 10)
-        .expect("query should succeed");
+    let results = store.query("git", "co", 10)?;
     assert_eq!(results.len(), 1);
     assert_eq!(results[0], entry);
+    Ok(())
 }
 
 /// Exhaustive set of (command, prefix, expected context) tuples covering every
@@ -170,7 +168,7 @@ mod tests {
     #[test]
     fn roundtrip_with_mem_store() {
         let store = MemStore::new();
-        validate_store_roundtrip(&store);
+        validate_store_roundtrip(&store).unwrap();
     }
 
     #[test]
@@ -233,7 +231,7 @@ mod tests {
     #[test]
     fn validate_store_roundtrip_checks_equality() {
         let store = MemStore::new();
-        validate_store_roundtrip(&store);
+        validate_store_roundtrip(&store).unwrap();
         assert_eq!(store.count().unwrap(), 1);
     }
 
