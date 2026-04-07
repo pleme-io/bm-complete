@@ -129,19 +129,15 @@ impl CompletionSource for FishSource {
     }
 
     fn entries(&self) -> Result<Vec<CompletionEntry>> {
-        let mut all = Vec::new();
-        for dir in &self.dirs {
-            if !dir.is_dir() {
-                continue;
-            }
-            let entries = std::fs::read_dir(dir)?;
-            for entry in entries.flatten() {
-                let path = entry.path();
-                if path.extension().and_then(|e| e.to_str()) == Some("fish") {
-                    all.extend(Self::parse_file(&path));
-                }
-            }
-        }
+        let all = self
+            .dirs
+            .iter()
+            .filter(|d| d.is_dir())
+            .flat_map(|d| std::fs::read_dir(d).into_iter().flatten())
+            .flatten()
+            .filter(|e| e.path().extension().and_then(|x| x.to_str()) == Some("fish"))
+            .flat_map(|e| Self::parse_file(&e.path()))
+            .collect();
         Ok(all)
     }
 }

@@ -296,40 +296,26 @@ fn path_completions(
         (Path::new(".").to_path_buf(), prefix, "")
     };
 
-    let mut results = Vec::new();
     let Ok(entries) = paths.list_dir(&dir) else {
-        return results;
+        return Vec::new();
     };
 
-    for entry in &entries {
-        if results.len() >= limit {
-            break;
-        }
-        let name_str = &entry.name;
-
-        // Skip hidden files unless the filter starts with '.'
-        if name_str.starts_with('.') && !file_prefix.starts_with('.') {
-            continue;
-        }
-
-        if !file_prefix.is_empty() && !name_str.starts_with(file_prefix) {
-            continue;
-        }
-
-        if dirs_only && !entry.is_dir {
-            continue;
-        }
-
-        let suffix = if entry.is_dir { "/" } else { "" };
-        let completion = format!("{base}{name_str}{suffix}");
-
-        results.push(CompletionEntry {
-            command: String::new(),
-            completion,
-            description: if entry.is_dir { "directory" } else { "file" }.into(),
-            source: "path".into(),
-        });
-    }
+    let mut results: Vec<CompletionEntry> = entries
+        .iter()
+        .filter(|e| !e.name.starts_with('.') || file_prefix.starts_with('.'))
+        .filter(|e| file_prefix.is_empty() || e.name.starts_with(file_prefix))
+        .filter(|e| !dirs_only || e.is_dir)
+        .take(limit)
+        .map(|e| {
+            let suffix = if e.is_dir { "/" } else { "" };
+            CompletionEntry {
+                command: String::new(),
+                completion: format!("{base}{}{suffix}", e.name),
+                description: if e.is_dir { "directory" } else { "file" }.into(),
+                source: "path".into(),
+            }
+        })
+        .collect();
 
     results.sort_by(|a, b| a.completion.cmp(&b.completion));
     results
