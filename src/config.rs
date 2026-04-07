@@ -1,4 +1,5 @@
 use anyhow::Result;
+use crate::error::BmError;
 use figment::{
     providers::{Env, Format, Yaml},
     Figment,
@@ -97,7 +98,7 @@ pub fn load(path: Option<&Path>) -> Result<Config> {
         figment = figment.merge(Yaml::file(p));
     }
     figment = figment.merge(Env::prefixed("BM_COMPLETE_").split("__"));
-    let config: Config = figment.extract().map_err(|e| anyhow::anyhow!("{e}"))?;
+    let config: Config = figment.extract().map_err(|e| BmError::Config(e.to_string()))?;
     Ok(config)
 }
 
