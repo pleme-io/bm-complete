@@ -65,6 +65,12 @@ impl Default for CompletionEntryBuilder {
     }
 }
 
+impl From<CompletionEntryBuilder> for CompletionEntry {
+    fn from(b: CompletionEntryBuilder) -> Self {
+        b.build()
+    }
+}
+
 /// Insert an entry, query it back, and assert round-trip equality.
 ///
 /// Works with any `Store` implementation.
@@ -186,6 +192,16 @@ mod tests {
                 "classify_context({cmd:?}, {prefix:?}) should be {expected:?}"
             );
         }
+    }
+
+    #[test]
+    fn builder_into_completion_entry() {
+        let entry: CompletionEntry = CompletionEntryBuilder::new()
+            .command("git")
+            .completion("push")
+            .into();
+        assert_eq!(entry.command, "git");
+        assert_eq!(entry.completion, "push");
     }
 
     #[test]
