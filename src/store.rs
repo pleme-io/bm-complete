@@ -78,7 +78,8 @@ impl SqliteStore {
     ///
     /// Returns an error if the database file cannot be opened or schema
     /// creation fails.
-    pub fn open_at(path: &Path) -> Result<Self> {
+    pub fn open_at(path: impl AsRef<Path>) -> Result<Self> {
+        let path = path.as_ref();
         let conn =
             Connection::open(path).context("failed to open completion database")?;
         conn.execute_batch(
