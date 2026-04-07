@@ -625,6 +625,16 @@ rec {
         sha256 = "0x8ymkz1xr77rcj1cfanhf416pc4v681gmkc9dzb3jqja7f62nxh";
 
       };
+      "diff" = rec {
+        crateName = "diff";
+        version = "0.1.13";
+        edition = "2015";
+        sha256 = "1j0nzjxci2zqx63hdcihkp0a4dkdmzxd7my4m7zk6cjyfy34j9an";
+        authors = [
+          "Utkarsh Kukreti <utkarshkukreti@gmail.com>"
+        ];
+
+      };
       "difflib" = rec {
         crateName = "difflib";
         version = "0.4.0";
@@ -1773,6 +1783,10 @@ rec {
             packageId = "predicates";
           }
           {
+            name = "pretty_assertions";
+            packageId = "pretty_assertions";
+          }
+          {
             name = "tempfile";
             packageId = "tempfile";
           }
@@ -1851,6 +1865,31 @@ rec {
           }
         ];
 
+      };
+      "pretty_assertions" = rec {
+        crateName = "pretty_assertions";
+        version = "1.4.1";
+        edition = "2018";
+        sha256 = "0v8iq35ca4rw3rza5is3wjxwsf88303ivys07anc5yviybi31q9s";
+        authors = [
+          "Colin Kiegel <kiegel@gmx.de>"
+          "Florent Fayolle <florent.fayolle69@gmail.com>"
+          "Tom Milligan <code@tommilligan.net>"
+        ];
+        dependencies = [
+          {
+            name = "diff";
+            packageId = "diff";
+          }
+          {
+            name = "yansi";
+            packageId = "yansi";
+          }
+        ];
+        features = {
+          "default" = [ "std" ];
+        };
+        resolvedDefaultFeatures = [ "default" "std" ];
       };
       "prettyplease" = rec {
         crateName = "prettyplease";
