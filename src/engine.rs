@@ -78,17 +78,7 @@ impl CompletionEngine for DefaultEngine {
 mod tests {
     use super::*;
     use crate::store::{MemStore, Store};
-
-    /// Minimal mock engine for test isolation.
-    struct MockEngine {
-        results: Vec<CompletionEntry>,
-    }
-
-    impl CompletionEngine for MockEngine {
-        fn complete(&self, _buffer: &str, _position: usize) -> Result<Vec<CompletionEntry>> {
-            Ok(self.results.clone())
-        }
-    }
+    use crate::testing::MockEngine;
 
     #[test]
     fn mock_engine_returns_results() {

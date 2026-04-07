@@ -83,16 +83,7 @@ fn handle_request(json: &str, engine: &dyn CompletionEngine) -> Result<String> {
 mod tests {
     use super::*;
     use crate::store::CompletionEntry;
-
-    struct MockEngine {
-        results: Vec<CompletionEntry>,
-    }
-
-    impl CompletionEngine for MockEngine {
-        fn complete(&self, _buffer: &str, _position: usize) -> Result<Vec<CompletionEntry>> {
-            Ok(self.results.clone())
-        }
-    }
+    use crate::testing::MockEngine;
 
     #[test]
     fn handle_request_valid_json() {

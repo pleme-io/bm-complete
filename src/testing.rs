@@ -1,7 +1,9 @@
 //! Shared test utilities — builders, validators, fixture data.
 
 use crate::completions::CompletionContext;
+use crate::engine::CompletionEngine;
 use crate::store::{CompletionEntry, Store};
+use anyhow::Result;
 
 /// Fluent builder for [`CompletionEntry`] — avoids boilerplate in tests.
 pub struct CompletionEntryBuilder {
@@ -115,6 +117,19 @@ pub fn classify_context_suite() -> Vec<(&'static str, &'static str, CompletionCo
         ("cargo", "build", CompletionContext::CommandArg),
         ("ls", "", CompletionContext::CommandArg),
     ]
+}
+
+/// Minimal mock [`CompletionEngine`] for test isolation.
+///
+/// Always returns the same fixed set of results regardless of input.
+pub struct MockEngine {
+    pub results: Vec<CompletionEntry>,
+}
+
+impl CompletionEngine for MockEngine {
+    fn complete(&self, _buffer: &str, _position: usize) -> Result<Vec<CompletionEntry>> {
+        Ok(self.results.clone())
+    }
 }
 
 #[cfg(test)]
