@@ -232,13 +232,6 @@ impl Store for MemStore {
     }
 }
 
-// ═══════════════════════════════════════════════════════════════════
-// Backward-compat alias
-// ═══════════════════════════════════════════════════════════════════
-
-/// Legacy alias — prefer [`SqliteStore`] in new code.
-pub type CompletionStore = SqliteStore;
-
 #[cfg(test)]
 mod tests {
     use super::*;
