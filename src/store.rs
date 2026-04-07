@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use crate::error::BmError;
 use rusqlite::Connection;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
@@ -105,7 +106,7 @@ impl Store for SqliteStore {
         let conn = self
             .conn
             .lock()
-            .map_err(|e| anyhow::anyhow!("SqliteStore mutex poisoned: {e}"))?;
+            .map_err(|e| BmError::mutex_poisoned("SqliteStore", e))?;
         conn.execute(
             "INSERT OR REPLACE INTO completions (command, completion, description, source)
              VALUES (?1, ?2, ?3, ?4)",
@@ -128,7 +129,7 @@ impl Store for SqliteStore {
         let conn = self
             .conn
             .lock()
-            .map_err(|e| anyhow::anyhow!("SqliteStore mutex poisoned: {e}"))?;
+            .map_err(|e| BmError::mutex_poisoned("SqliteStore", e))?;
         let mut stmt = conn.prepare(
             "SELECT command, completion, description, source FROM completions
              WHERE command = ?1 AND completion LIKE ?2
@@ -156,7 +157,7 @@ impl Store for SqliteStore {
         let conn = self
             .conn
             .lock()
-            .map_err(|e| anyhow::anyhow!("SqliteStore mutex poisoned: {e}"))?;
+            .map_err(|e| BmError::mutex_poisoned("SqliteStore", e))?;
         let count: usize =
             conn.query_row("SELECT COUNT(*) FROM completions", [], |row| row.get(0))?;
         Ok(count)
@@ -192,7 +193,7 @@ impl Store for MemStore {
         let mut data = self
             .entries
             .lock()
-            .map_err(|e| anyhow::anyhow!("MemStore mutex poisoned: {e}"))?;
+            .map_err(|e| BmError::mutex_poisoned("MemStore", e))?;
         // Replace existing entry with same (command, completion, source)
         data.retain(|e| {
             !(e.command == entry.command
@@ -212,7 +213,7 @@ impl Store for MemStore {
         let data = self
             .entries
             .lock()
-            .map_err(|e| anyhow::anyhow!("MemStore mutex poisoned: {e}"))?;
+            .map_err(|e| BmError::mutex_poisoned("MemStore", e))?;
         let mut results: Vec<CompletionEntry> = data
             .iter()
             .filter(|e| e.command == command && e.completion.starts_with(prefix))
@@ -227,7 +228,7 @@ impl Store for MemStore {
         let data = self
             .entries
             .lock()
-            .map_err(|e| anyhow::anyhow!("MemStore mutex poisoned: {e}"))?;
+            .map_err(|e| BmError::mutex_poisoned("MemStore", e))?;
         Ok(data.len())
     }
 }
