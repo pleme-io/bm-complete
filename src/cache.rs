@@ -135,4 +135,122 @@ mod tests {
         let fp2 = fp.fingerprint();
         assert_ne!(fp1, fp2, "fingerprint should change when file is modified");
     }
+
+    #[test]
+    fn resolve_completions_error_propagation() {
+        let cache = MemCache::empty();
+        let fp = FixedFingerprinter(1);
+        let result = resolve_completions(&cache, &fp, || {
+            Err(anyhow::anyhow!("indexing failed"))
+        });
+        assert!(result.is_err(), "error from index_fn should propagate");
+        assert!(
+            result.unwrap_err().to_string().contains("indexing failed"),
+            "error message should be preserved"
+        );
+    }
+
+    #[test]
+    fn cache_hit_preserves_data_fidelity() {
+        let cache = MemCache::empty();
+        let fp = FixedFingerprinter(42);
+        let entries = vec![
+            CompletionEntry {
+                command: "git".into(),
+                completion: "commit".into(),
+                description: "Record changes".into(),
+                source: "fish".into(),
+            },
+            CompletionEntry {
+                command: "git".into(),
+                completion: "push".into(),
+                description: "Update remote".into(),
+                source: "fish".into(),
+            },
+        ];
+        cache.save(42, &entries).unwrap();
+        let loaded = resolve_completions(&cache, &fp, || panic!("should not call")).unwrap();
+        assert_eq!(loaded.len(), 2);
+        assert_eq!(loaded[0].completion, "commit");
+        assert_eq!(loaded[1].completion, "push");
+    }
+
+    #[test]
+    fn fs_cache_overwrite() {
+        let dir = tempfile::tempdir().unwrap();
+        let cache = FsCache {
+            path: dir.path().join("compiled.json"),
+        };
+
+        let entries1 = vec![CompletionEntry {
+            command: "v1".into(),
+            completion: "old".into(),
+            description: String::new(),
+            source: "test".into(),
+        }];
+        cache.save(1, &entries1).unwrap();
+
+        let entries2 = vec![CompletionEntry {
+            command: "v2".into(),
+            completion: "new".into(),
+            description: String::new(),
+            source: "test".into(),
+        }];
+        cache.save(2, &entries2).unwrap();
+
+        let (fp, loaded) = CacheStore::<Vec<CompletionEntry>>::load(&cache).unwrap();
+        assert_eq!(fp, 2);
+        assert_eq!(loaded[0].completion, "new");
+    }
+
+    #[test]
+    fn fs_fingerprinter_empty_dir() {
+        let dir = tempfile::tempdir().unwrap();
+        let fp = completion_fingerprinter(vec![dir.path().to_path_buf()]);
+        let fp1 = fp.fingerprint();
+        let fp2 = fp.fingerprint();
+        assert_eq!(fp1, fp2, "fingerprint of empty dir should be deterministic");
+    }
+
+    #[test]
+    fn fs_fingerprinter_stable_without_changes() {
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join("stable.fish"), "content").unwrap();
+
+        let fp = completion_fingerprinter(vec![dir.path().to_path_buf()]);
+        let fp1 = fp.fingerprint();
+        let fp2 = fp.fingerprint();
+        assert_eq!(fp1, fp2, "fingerprint should be stable without file changes");
+    }
+
+    #[test]
+    fn fs_fingerprinter_nonexistent_dir() {
+        let fp = completion_fingerprinter(vec![std::path::PathBuf::from("/nonexistent/dir")]);
+        let fp1 = fp.fingerprint();
+        let fp2 = fp.fingerprint();
+        assert_eq!(
+            fp1, fp2,
+            "fingerprint of nonexistent dir should be deterministic"
+        );
+    }
+
+    #[test]
+    fn mem_cache_save_and_load() {
+        let cache: MemCache<Vec<CompletionEntry>> = MemCache::empty();
+        let entries = test_entries();
+        cache.save(99, &entries).unwrap();
+        let (fp, loaded) = cache.load().unwrap();
+        assert_eq!(fp, 99);
+        assert_eq!(loaded.len(), 1);
+    }
+
+    #[test]
+    fn mem_cache_overwrite() {
+        let cache: MemCache<Vec<CompletionEntry>> = MemCache::empty();
+        cache.save(1, &vec![]).unwrap();
+        cache.save(2, &test_entries()).unwrap();
+        let (fp, loaded) = cache.load().unwrap();
+        assert_eq!(fp, 2);
+        assert_eq!(loaded.len(), 1);
+    }
 }

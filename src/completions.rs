@@ -717,4 +717,426 @@ mod tests {
             "hidden files should be included when prefix starts with '.': {results:?}"
         );
     }
+
+    // ── complete() edge cases ────────────────────────────────────
+
+    #[test]
+    fn complete_single_word_no_prefix() {
+        let store = MemStore::new();
+        store
+            .insert(&CompletionEntry {
+                command: "git".into(),
+                completion: "commit".into(),
+                description: String::new(),
+                source: "fish".into(),
+            })
+            .unwrap();
+
+        let cfg = TestConfig {
+            index_path: false,
+            ..TestConfig::default()
+        };
+        let results = complete("git", 3, &store, &cfg, &fs_paths()).unwrap();
+        assert!(
+            results.is_empty() || results.iter().all(|r| r.command == "git"),
+            "single word with no space should query with empty prefix"
+        );
+    }
+
+    #[test]
+    fn complete_trailing_whitespace_no_prefix() {
+        let store = MemStore::new();
+        store
+            .insert(&CompletionEntry {
+                command: "git".into(),
+                completion: "commit".into(),
+                description: String::new(),
+                source: "fish".into(),
+            })
+            .unwrap();
+        store
+            .insert(&CompletionEntry {
+                command: "git".into(),
+                completion: "push".into(),
+                description: String::new(),
+                source: "fish".into(),
+            })
+            .unwrap();
+
+        let cfg = TestConfig {
+            index_path: false,
+            ..TestConfig::default()
+        };
+        let results = complete("git ", 4, &store, &cfg, &fs_paths()).unwrap();
+        assert_eq!(
+            results.len(),
+            2,
+            "trailing space should use empty prefix and return all subcommands"
+        );
+    }
+
+    #[test]
+    fn complete_whitespace_only_returns_empty() {
+        let store = MemStore::new();
+        let cfg = TestConfig::default();
+        let results = complete("   ", 3, &store, &cfg, &fs_paths()).unwrap();
+        assert!(results.is_empty(), "whitespace-only buffer should return nothing");
+    }
+
+    #[test]
+    fn complete_directory_nav_with_mock() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("."),
+            vec![
+                DirEntry { name: "src".into(), is_dir: true },
+                DirEntry { name: "Cargo.toml".into(), is_dir: false },
+            ],
+        );
+        let mock = MockPathProvider { entries, home: None };
+        let store = MemStore::new();
+        let cfg = TestConfig {
+            index_path: true,
+            ..TestConfig::default()
+        };
+
+        let results = complete("cd ", 3, &store, &cfg, &mock).unwrap();
+        assert!(
+            results.iter().all(|r| r.description == "directory"),
+            "cd should only show directories: {results:?}"
+        );
+        assert!(
+            results.iter().any(|r| r.completion.contains("src")),
+            "should show src directory"
+        );
+        assert!(
+            !results.iter().any(|r| r.completion.contains("Cargo.toml")),
+            "should not show files in cd completion"
+        );
+    }
+
+    #[test]
+    fn complete_path_shaped_prefix_with_mock() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("/etc"),
+            vec![
+                DirEntry { name: "hosts".into(), is_dir: false },
+                DirEntry { name: "nginx".into(), is_dir: true },
+            ],
+        );
+        let mock = MockPathProvider { entries, home: None };
+        let store = MemStore::new();
+        let cfg = TestConfig {
+            index_path: true,
+            ..TestConfig::default()
+        };
+
+        let results = complete("cat /etc/", 9, &store, &cfg, &mock).unwrap();
+        assert_eq!(results.len(), 2);
+        assert!(results.iter().any(|r| r.completion.contains("hosts")));
+        assert!(results.iter().any(|r| r.completion.contains("nginx")));
+    }
+
+    #[test]
+    fn complete_tilde_expansion_with_mock() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("/home/testuser"),
+            vec![
+                DirEntry { name: "Documents".into(), is_dir: true },
+                DirEntry { name: ".bashrc".into(), is_dir: false },
+            ],
+        );
+        let mock = MockPathProvider {
+            entries,
+            home: Some(PathBuf::from("/home/testuser")),
+        };
+        let store = MemStore::new();
+        let cfg = TestConfig {
+            index_path: true,
+            ..TestConfig::default()
+        };
+
+        let results = complete("ls ~/", 4, &store, &cfg, &mock).unwrap();
+        assert!(
+            results.iter().any(|r| r.completion.contains("Documents")),
+            "tilde expansion should list home directory contents: {results:?}"
+        );
+    }
+
+    #[test]
+    fn complete_dirs_only_filters_files() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("."),
+            vec![
+                DirEntry { name: "dir1".into(), is_dir: true },
+                DirEntry { name: "file1.txt".into(), is_dir: false },
+                DirEntry { name: "dir2".into(), is_dir: true },
+            ],
+        );
+        let mock = MockPathProvider { entries, home: None };
+
+        let results = path_completions("", 50, true, &mock);
+        assert!(
+            results.iter().all(|r| r.description == "directory"),
+            "dirs_only should exclude files: {results:?}"
+        );
+        assert_eq!(results.len(), 2);
+    }
+
+    #[test]
+    fn path_completions_respects_limit() {
+        let mut entries = HashMap::new();
+        let many_entries: Vec<DirEntry> = (0..20)
+            .map(|i| DirEntry {
+                name: format!("file{i:02}.txt"),
+                is_dir: false,
+            })
+            .collect();
+        entries.insert(PathBuf::from("/big"), many_entries);
+        let mock = MockPathProvider { entries, home: None };
+
+        let results = path_completions("/big/", 5, false, &mock);
+        assert!(
+            results.len() <= 5,
+            "path_completions should respect limit: got {}",
+            results.len()
+        );
+    }
+
+    #[test]
+    fn path_completions_nonexistent_dir() {
+        let mock = MockPathProvider {
+            entries: HashMap::new(),
+            home: None,
+        };
+        let results = path_completions("/nonexistent/", 50, false, &mock);
+        assert!(results.is_empty());
+    }
+
+    #[test]
+    fn path_completions_mid_path_filter() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("/src/"),
+            vec![
+                DirEntry { name: "main.rs".into(), is_dir: false },
+                DirEntry { name: "lib.rs".into(), is_dir: false },
+                DirEntry { name: "mod.rs".into(), is_dir: false },
+            ],
+        );
+        let mock = MockPathProvider { entries, home: None };
+
+        let results = path_completions("/src/ma", 50, false, &mock);
+        assert_eq!(results.len(), 1);
+        assert!(results[0].completion.contains("main.rs"));
+    }
+
+    #[test]
+    fn complete_fallback_to_path_when_store_empty() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("."),
+            vec![DirEntry { name: "readme.md".into(), is_dir: false }],
+        );
+        let mock = MockPathProvider { entries, home: None };
+        let store = MemStore::new();
+        let cfg = TestConfig {
+            index_path: true,
+            ..TestConfig::default()
+        };
+
+        let results = complete("cat re", 6, &store, &cfg, &mock).unwrap();
+        assert!(
+            results.iter().any(|r| r.completion.contains("readme.md")),
+            "should fall back to path completion when store has no matches: {results:?}"
+        );
+    }
+
+    #[test]
+    fn complete_no_fallback_when_store_has_matches() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("."),
+            vec![DirEntry { name: "readme.md".into(), is_dir: false }],
+        );
+        let mock = MockPathProvider { entries, home: None };
+        let store = MemStore::new();
+        store
+            .insert(&CompletionEntry {
+                command: "git".into(),
+                completion: "rebase".into(),
+                description: "Rebase commits".into(),
+                source: "fish".into(),
+            })
+            .unwrap();
+        let cfg = TestConfig {
+            index_path: true,
+            ..TestConfig::default()
+        };
+
+        let results = complete("git re", 6, &store, &cfg, &mock).unwrap();
+        assert!(
+            results.iter().any(|r| r.completion == "rebase"),
+            "should use store results when available"
+        );
+    }
+
+    #[test]
+    fn path_completions_results_sorted() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("/dir"),
+            vec![
+                DirEntry { name: "zebra".into(), is_dir: false },
+                DirEntry { name: "alpha".into(), is_dir: false },
+                DirEntry { name: "middle".into(), is_dir: false },
+            ],
+        );
+        let mock = MockPathProvider { entries, home: None };
+
+        let results = path_completions("/dir/", 50, false, &mock);
+        let completions: Vec<&str> = results.iter().map(|r| r.completion.as_str()).collect();
+        let mut sorted = completions.clone();
+        sorted.sort();
+        assert_eq!(completions, sorted, "path completions should be sorted");
+    }
+
+    #[test]
+    fn path_completions_source_is_path() {
+        let mut entries = HashMap::new();
+        entries.insert(
+            PathBuf::from("."),
+            vec![DirEntry { name: "test.rs".into(), is_dir: false }],
+        );
+        let mock = MockPathProvider { entries, home: None };
+
+        let results = path_completions("te", 50, false, &mock);
+        assert!(
+            results.iter().all(|r| r.source == "path"),
+            "path completions should have source 'path'"
+        );
+    }
+
+    #[test]
+    fn classify_all_dir_nav_commands() {
+        for cmd in ["cd", "pushd", "popd", "z", "zoxide", "j", "autojump"] {
+            assert_eq!(
+                classify_context(cmd, "anything"),
+                CompletionContext::DirectoryNav,
+                "{cmd} should classify as DirectoryNav"
+            );
+        }
+    }
+
+    #[test]
+    fn classify_dot_dot_slash_is_path() {
+        assert_eq!(
+            classify_context("vim", "../foo"),
+            CompletionContext::PathCompletion
+        );
+    }
+
+    #[test]
+    fn classify_single_dash_is_flag() {
+        assert_eq!(
+            classify_context("ls", "-"),
+            CompletionContext::FlagCompletion
+        );
+    }
+
+    #[test]
+    fn classify_double_dash_is_flag() {
+        assert_eq!(
+            classify_context("git", "--"),
+            CompletionContext::FlagCompletion
+        );
+    }
+
+    #[test]
+    fn classify_empty_prefix_is_command_arg() {
+        assert_eq!(
+            classify_context("git", ""),
+            CompletionContext::CommandArg
+        );
+    }
+
+    #[test]
+    fn complete_with_index_path_disabled_skips_path_fallback() {
+        let store = MemStore::new();
+        let cfg = TestConfig {
+            index_path: false,
+            ..TestConfig::default()
+        };
+        let results = complete("ls /tmp", 7, &store, &cfg, &fs_paths()).unwrap();
+        assert!(
+            results.is_empty(),
+            "with index_path=false, path-shaped prefix should not trigger path completion"
+        );
+    }
+
+    #[test]
+    fn mock_path_provider_exists() {
+        let mut entries = HashMap::new();
+        entries.insert(PathBuf::from("/exists"), vec![]);
+        let mock = MockPathProvider { entries, home: None };
+
+        assert!(mock.exists(Path::new("/exists")));
+        assert!(!mock.exists(Path::new("/nope")));
+    }
+
+    #[test]
+    fn mock_path_provider_is_dir() {
+        let mut entries = HashMap::new();
+        entries.insert(PathBuf::from("/adir"), vec![]);
+        let mock = MockPathProvider { entries, home: None };
+
+        assert!(mock.is_dir(Path::new("/adir")));
+        assert!(!mock.is_dir(Path::new("/nope")));
+    }
+
+    #[test]
+    fn mock_path_provider_list_dir_nonexistent() {
+        let mock = MockPathProvider {
+            entries: HashMap::new(),
+            home: None,
+        };
+        assert!(mock.list_dir(Path::new("/nope")).is_err());
+    }
+
+    #[test]
+    fn mock_path_provider_home_dir() {
+        let mock = MockPathProvider {
+            entries: HashMap::new(),
+            home: Some(PathBuf::from("/home/test")),
+        };
+        assert_eq!(mock.home_dir(), Some(PathBuf::from("/home/test")));
+
+        let mock_no_home = MockPathProvider {
+            entries: HashMap::new(),
+            home: None,
+        };
+        assert_eq!(mock_no_home.home_dir(), None);
+    }
+
+    #[test]
+    fn complete_tilde_without_home_dir() {
+        let mock = MockPathProvider {
+            entries: HashMap::new(),
+            home: None,
+        };
+        let store = MemStore::new();
+        let cfg = TestConfig {
+            index_path: true,
+            ..TestConfig::default()
+        };
+
+        let results = complete("ls ~/", 4, &store, &cfg, &mock).unwrap();
+        assert!(
+            results.is_empty(),
+            "tilde without home dir should return empty: {results:?}"
+        );
+    }
 }

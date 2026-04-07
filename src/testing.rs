@@ -166,4 +166,67 @@ mod tests {
             );
         }
     }
+
+    #[test]
+    fn builder_default_trait() {
+        let entry = CompletionEntryBuilder::default().build();
+        assert!(entry.command.is_empty());
+        assert_eq!(entry.source, "mock");
+    }
+
+    #[test]
+    fn builder_partial_fields() {
+        let entry = CompletionEntryBuilder::new()
+            .command("cargo")
+            .build();
+        assert_eq!(entry.command, "cargo");
+        assert!(entry.completion.is_empty());
+        assert!(entry.description.is_empty());
+        assert_eq!(entry.source, "mock");
+    }
+
+    #[test]
+    fn builder_custom_source() {
+        let entry = CompletionEntryBuilder::new()
+            .source("custom-plugin")
+            .build();
+        assert_eq!(entry.source, "custom-plugin");
+    }
+
+    #[test]
+    fn validate_store_roundtrip_checks_equality() {
+        let store = MemStore::new();
+        validate_store_roundtrip(&store);
+        assert_eq!(store.count().unwrap(), 1);
+    }
+
+    #[test]
+    fn classify_suite_has_all_dir_nav_commands() {
+        let suite = classify_context_suite();
+        let dir_nav: Vec<&str> = suite
+            .iter()
+            .filter(|(_, _, ctx)| *ctx == CompletionContext::DirectoryNav)
+            .map(|(cmd, _, _)| *cmd)
+            .collect();
+        for expected in ["cd", "pushd", "popd", "z", "zoxide", "j", "autojump"] {
+            assert!(
+                dir_nav.contains(&expected),
+                "suite should include {expected} as DirectoryNav"
+            );
+        }
+    }
+
+    #[test]
+    fn classify_suite_has_path_variations() {
+        let suite = classify_context_suite();
+        let path_prefixes: Vec<&str> = suite
+            .iter()
+            .filter(|(_, _, ctx)| *ctx == CompletionContext::PathCompletion)
+            .map(|(_, prefix, _)| *prefix)
+            .collect();
+        assert!(path_prefixes.iter().any(|p| p.starts_with('/')));
+        assert!(path_prefixes.iter().any(|p| p.starts_with('~')));
+        assert!(path_prefixes.iter().any(|p| p.starts_with("./")));
+        assert!(path_prefixes.iter().any(|p| p.starts_with("../")));
+    }
 }
