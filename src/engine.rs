@@ -7,6 +7,10 @@ use std::sync::Arc;
 /// Trait for the top-level completion engine — one method, easy to mock.
 pub trait CompletionEngine: Send + Sync {
     /// Produce completions for the given buffer at `position`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the underlying store or path provider fails.
     fn complete(&self, buffer: &str, position: usize) -> Result<Vec<CompletionEntry>>;
 }
 
@@ -18,13 +22,21 @@ pub struct DefaultEngine {
 }
 
 impl DefaultEngine {
-    /// Create a new engine, opening the default SQLite database.
+    /// Create a new engine, opening the default `SQLite` database.
     /// Uses [`FsPathProvider`] for real filesystem path completions.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the `SQLite` database cannot be opened.
     pub fn new(config: Config) -> Result<Self> {
         Self::with_path_provider(config, Arc::new(FsPathProvider))
     }
 
     /// Create a new engine with a custom [`PathProvider`].
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the `SQLite` database cannot be opened.
     pub fn with_path_provider(
         config: Config,
         path_provider: Arc<dyn PathProvider>,

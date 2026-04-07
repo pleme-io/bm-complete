@@ -66,6 +66,11 @@ impl Default for CompletionEntryBuilder {
 /// Insert an entry, query it back, and assert round-trip equality.
 ///
 /// Works with any `Store` implementation.
+///
+/// # Panics
+///
+/// Panics if the insert or query fails, or if the round-trip result
+/// doesn't match the original entry.
 pub fn validate_store_roundtrip(store: &dyn Store) {
     let entry = CompletionEntryBuilder::new()
         .command("git")
@@ -84,6 +89,7 @@ pub fn validate_store_roundtrip(store: &dyn Store) {
 
 /// Exhaustive set of (command, prefix, expected context) tuples covering every
 /// variant of [`CompletionContext`].
+#[must_use]
 pub fn classify_context_suite() -> Vec<(&'static str, &'static str, CompletionContext)> {
     vec![
         // DirectoryNav

@@ -26,10 +26,24 @@ impl Default for CompletionEntry {
 /// Abstraction over completion storage backends.
 pub trait Store: Send + Sync {
     /// Insert (or replace) a single completion entry.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the underlying storage backend fails.
     fn insert(&self, entry: &CompletionEntry) -> Result<()>;
+
     /// Query completions for `command` whose completion text starts with `prefix`.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the underlying storage backend fails.
     fn query(&self, command: &str, prefix: &str, limit: usize) -> Result<Vec<CompletionEntry>>;
+
     /// Total number of stored entries.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the underlying storage backend fails.
     fn count(&self) -> Result<usize>;
 }
 
@@ -43,6 +57,11 @@ pub struct SqliteStore {
 
 impl SqliteStore {
     /// Open (or create) the default database under the user cache dir.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the cache directory cannot be created or the
+    /// database cannot be opened.
     pub fn open_or_create() -> Result<Self> {
         let cache_dir = dirs::cache_dir()
             .unwrap_or_else(|| std::path::PathBuf::from("/tmp"))
@@ -53,6 +72,11 @@ impl SqliteStore {
     }
 
     /// Open (or create) a database at an explicit path — useful for tests.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the database file cannot be opened or schema
+    /// creation fails.
     pub fn open_at(path: &Path) -> Result<Self> {
         let conn =
             Connection::open(path).context("failed to open completion database")?;
@@ -505,7 +529,7 @@ mod tests {
         let results = store.query("test", "", 50).unwrap();
         let completions: Vec<&str> = results.iter().map(|r| r.completion.as_str()).collect();
         let mut sorted = completions.clone();
-        sorted.sort();
+        sorted.sort_unstable();
         assert_eq!(completions, sorted, "results should be sorted by completion");
     }
 

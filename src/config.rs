@@ -70,9 +70,10 @@ impl CompletionConfig for Config {
 
 #[must_use]
 fn default_cache_dir() -> String {
-    dirs::cache_dir()
-        .map(|d| d.join("bm-complete").to_string_lossy().into_owned())
-        .unwrap_or_else(|| "$HOME/.cache/bm-complete".into())
+    dirs::cache_dir().map_or_else(
+        || "$HOME/.cache/bm-complete".into(),
+        |d| d.join("bm-complete").to_string_lossy().into_owned(),
+    )
 }
 
 #[must_use]
@@ -84,6 +85,12 @@ fn default_true() -> bool {
     true
 }
 
+/// Load configuration from an optional YAML file path, merging with
+/// environment variables prefixed with `BM_COMPLETE_`.
+///
+/// # Errors
+///
+/// Returns an error if the YAML file is malformed or extraction fails.
 pub fn load(path: Option<&Path>) -> Result<Config> {
     let mut figment = Figment::new();
     if let Some(p) = path {

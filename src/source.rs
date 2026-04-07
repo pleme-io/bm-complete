@@ -8,6 +8,10 @@ pub trait CompletionSource: Send + Sync {
     /// Human-readable name for this source.
     fn name(&self) -> &str;
     /// Extract all completion entries from this source.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the source cannot be read (e.g. I/O failure).
     fn entries(&self) -> Result<Vec<CompletionEntry>>;
 }
 
@@ -18,6 +22,7 @@ pub struct FishSource {
 }
 
 impl FishSource {
+    #[must_use]
     pub fn new(dirs: Vec<PathBuf>) -> Self {
         Self { dirs }
     }
@@ -43,9 +48,8 @@ impl FishSource {
             _ => return Vec::new(),
         };
 
-        let content = match std::fs::read_to_string(path) {
-            Ok(c) => c,
-            Err(_) => return Vec::new(),
+        let Ok(content) = std::fs::read_to_string(path) else {
+            return Vec::new();
         };
 
         let mut entries = Vec::new();
@@ -87,7 +91,7 @@ impl FishSource {
                         if rest.starts_with('\'') || rest.starts_with('"') {
                             let quote = rest.chars().next().unwrap();
                             if let Some(end) = rest[1..].find(quote) {
-                                description = rest[1..end + 1].to_string();
+                                description = rest[1..=end].to_string();
                             }
                         } else {
                             description = parts[i + 1].to_string();
@@ -121,7 +125,7 @@ impl Default for FishSource {
 }
 
 impl CompletionSource for FishSource {
-    fn name(&self) -> &str {
+    fn name(&self) -> &'static str {
         "fish"
     }
 
@@ -265,7 +269,7 @@ mod tests {
         writeln!(f, "complete -c git -l commit -d 'Record changes to repo'").unwrap();
 
         let entries = FishSource::parse_file(&fish_file);
-        assert!(entries.len() >= 1);
+        assert!(!entries.is_empty());
         let commit = entries.iter().find(|e| e.completion == "--commit").unwrap();
         assert_eq!(commit.description, "Record changes to repo");
     }
@@ -278,7 +282,7 @@ mod tests {
         writeln!(f, "complete -c test -l verbose -d verbose-mode").unwrap();
 
         let entries = FishSource::parse_file(&fish_file);
-        assert!(entries.len() >= 1);
+        assert!(!entries.is_empty());
         let entry = entries.iter().find(|e| e.completion == "--verbose").unwrap();
         assert_eq!(entry.description, "verbose-mode");
     }
@@ -291,7 +295,7 @@ mod tests {
         writeln!(f, "# This is a comment").unwrap();
         writeln!(f, "set -l commands commit push").unwrap();
         writeln!(f, "complete -c git -l commit").unwrap();
-        writeln!(f, "").unwrap();
+        writeln!(f).unwrap();
 
         let entries = FishSource::parse_file(&fish_file);
         assert_eq!(entries.len(), 1);

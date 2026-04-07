@@ -29,6 +29,11 @@ pub fn completion_fingerprinter(dirs: Vec<PathBuf>) -> FsFingerprinter {
 ///
 /// Thin wrapper around `hayai::cache::resolve_cached` — exists so callers
 /// don't need to spell out the generic parameter.
+///
+/// # Errors
+///
+/// Returns an error if the cache cannot be read/written or the index
+/// function fails.
 pub fn resolve_completions(
     cache: &dyn CacheStore<Vec<CompletionEntry>>,
     fp: &dyn Fingerprinter,

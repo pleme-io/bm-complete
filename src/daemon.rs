@@ -8,6 +8,11 @@ use tokio::net::UnixListener;
 /// Run the completion daemon listening on a Unix socket.
 ///
 /// The engine is opened once at startup and shared across all connections.
+///
+/// # Errors
+///
+/// Returns an error if the socket cannot be bound or a fatal I/O error
+/// occurs on the listener.
 pub async fn run(socket_path: &Path, engine: Arc<dyn CompletionEngine>) -> Result<()> {
     // Remove stale socket
     if socket_path.exists() {
@@ -207,7 +212,7 @@ mod tests {
         let engine = MockEngine {
             results: Vec::new(),
         };
-        let result = handle_request(r#"{}"#, &engine);
+        let result = handle_request(r"{}", &engine);
         assert!(
             result.is_err(),
             "JSON without 'buffer' field should error"
@@ -240,6 +245,8 @@ mod tests {
 
     #[tokio::test]
     async fn daemon_run_accepts_connection() {
+        use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+
         let dir = tempfile::tempdir().unwrap();
         let socket_path = dir.path().join("test.socket");
 
@@ -260,7 +267,6 @@ mod tests {
         let stream = tokio::net::UnixStream::connect(&socket_path).await.unwrap();
         let (reader, mut writer) = stream.into_split();
 
-        use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
         writer
             .write_all(b"{\"buffer\": \"git co\", \"position\": 6}\n")
             .await
@@ -305,6 +311,8 @@ mod tests {
 
     #[tokio::test]
     async fn daemon_multiple_requests_on_same_connection() {
+        use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+
         let dir = tempfile::tempdir().unwrap();
         let socket_path = dir.path().join("multi.socket");
 
@@ -325,8 +333,6 @@ mod tests {
         let stream = tokio::net::UnixStream::connect(&socket_path).await.unwrap();
         let (reader, mut writer) = stream.into_split();
         let mut reader = BufReader::new(reader);
-
-        use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
         for _ in 0..3 {
             writer

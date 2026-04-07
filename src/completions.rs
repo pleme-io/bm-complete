@@ -22,8 +22,12 @@ pub struct DirEntry {
 /// Implementations provide directory listing, existence checks, and home
 /// directory resolution. The trait is object-safe for dynamic dispatch.
 pub trait PathProvider: Send + Sync {
-    /// List entries in a directory. Returns an error if the directory
-    /// cannot be read (does not exist, permission denied, etc.).
+    /// List entries in a directory.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the directory cannot be read (does not exist,
+    /// permission denied, etc.).
     fn list_dir(&self, dir: &Path) -> Result<Vec<DirEntry>>;
     /// Check whether a path exists.
     fn exists(&self, path: &Path) -> bool;
@@ -134,6 +138,10 @@ pub fn classify_context(command: &str, prefix: &str) -> CompletionContext {
 }
 
 /// Complete a command line at the given cursor position.
+///
+/// # Errors
+///
+/// Returns an error if the backing store query fails.
 pub fn complete(
     buffer: &str,
     _position: usize,
@@ -177,6 +185,11 @@ pub fn complete(
 }
 
 /// Index all given completion sources into the store.
+///
+/// # Errors
+///
+/// Returns an error if a source fails to produce entries or if store
+/// insertion fails.
 pub fn index_sources(store: &dyn Store, sources: &[&dyn CompletionSource]) -> Result<()> {
     for source in sources {
         let entries = source.entries()?;
@@ -191,6 +204,11 @@ pub fn index_sources(store: &dyn Store, sources: &[&dyn CompletionSource]) -> Re
 
 /// Cache-aware variant of [`index_sources`]. Uses `resolve_cached()` and
 /// stores the resolved entries into the provided store.
+///
+/// # Errors
+///
+/// Returns an error if cache resolution, source indexing, or store
+/// insertion fails.
 pub fn index_sources_cached(
     store: &dyn Store,
     sources: &[&dyn CompletionSource],
@@ -227,9 +245,9 @@ fn path_completions(
 ) -> Vec<CompletionEntry> {
     // Expand leading ~ to home directory
     let expanded;
-    let prefix = if prefix.starts_with('~') {
+    let prefix = if let Some(rest) = prefix.strip_prefix('~') {
         if let Some(home) = paths.home_dir() {
-            expanded = format!("{}{}", home.display(), &prefix[1..]);
+            expanded = format!("{}{rest}", home.display());
             &expanded
         } else {
             prefix
@@ -1000,7 +1018,7 @@ mod tests {
         let results = path_completions("/dir/", 50, false, &mock);
         let completions: Vec<&str> = results.iter().map(|r| r.completion.as_str()).collect();
         let mut sorted = completions.clone();
-        sorted.sort();
+        sorted.sort_unstable();
         assert_eq!(completions, sorted, "path completions should be sorted");
     }
 
