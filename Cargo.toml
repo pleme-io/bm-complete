@@ -39,6 +39,7 @@ hayai = { git = "https://github.com/pleme-io/hayai" }
 tempfile = "3"
 assert_cmd = "2"
 predicates = "3"
+pretty_assertions = "1.4.1"
 
 [lints.clippy]
 pedantic = "warn"

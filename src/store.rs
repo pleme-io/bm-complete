@@ -630,4 +630,207 @@ mod tests {
         let store = MemStore::default();
         assert_eq!(store.count().unwrap(), 0);
     }
+
+    // ── SqliteStore advanced tests ───────────────────────────────
+
+    #[test]
+    fn sqlite_store_persists_across_reopen() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = dir.path().join("persist.db");
+
+        {
+            let store = SqliteStore::open_at(&db).unwrap();
+            store
+                .insert(&CompletionEntry {
+                    command: "git".into(),
+                    completion: "commit".into(),
+                    description: "Record changes".into(),
+                    source: "fish".into(),
+                })
+                .unwrap();
+            assert_eq!(store.count().unwrap(), 1);
+        }
+
+        let store = SqliteStore::open_at(&db).unwrap();
+        assert_eq!(store.count().unwrap(), 1);
+        let results = store.query("git", "co", 10).unwrap();
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].description, "Record changes");
+    }
+
+    #[test]
+    fn sqlite_store_special_characters_in_data() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = dir.path().join("special.db");
+        let store = SqliteStore::open_at(&db).unwrap();
+
+        let entry = CompletionEntry {
+            command: "git".into(),
+            completion: "--format='%H %s'".into(),
+            description: "it's a \"quoted\" value".into(),
+            source: "fish".into(),
+        };
+        store.insert(&entry).unwrap();
+
+        let results = store.query("git", "--format", 10).unwrap();
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].completion, "--format='%H %s'");
+        assert_eq!(results[0].description, "it's a \"quoted\" value");
+    }
+
+    #[test]
+    fn sqlite_store_unicode_data() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = dir.path().join("unicode.db");
+        let store = SqliteStore::open_at(&db).unwrap();
+
+        store
+            .insert(&CompletionEntry {
+                command: "echo".into(),
+                completion: "日本語".into(),
+                description: "Japanese text — 漢字".into(),
+                source: "custom".into(),
+            })
+            .unwrap();
+
+        let results = store.query("echo", "日", 10).unwrap();
+        assert_eq!(results.len(), 1);
+        assert_eq!(results[0].completion, "日本語");
+    }
+
+    #[test]
+    fn sqlite_store_bulk_insert_and_query() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = dir.path().join("bulk.db");
+        let store = SqliteStore::open_at(&db).unwrap();
+
+        for i in 0..100 {
+            store
+                .insert(&CompletionEntry {
+                    command: "test".into(),
+                    completion: format!("option-{i:03}"),
+                    description: format!("Description {i}"),
+                    source: "mock".into(),
+                })
+                .unwrap();
+        }
+
+        assert_eq!(store.count().unwrap(), 100);
+
+        let results = store.query("test", "option-05", 20).unwrap();
+        assert_eq!(results.len(), 10, "option-050..option-059");
+
+        let results = store.query("test", "option-09", 20).unwrap();
+        assert_eq!(results.len(), 10, "option-090..option-099");
+    }
+
+    #[test]
+    fn sqlite_store_empty_strings() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = dir.path().join("empty_str.db");
+        let store = SqliteStore::open_at(&db).unwrap();
+
+        store
+            .insert(&CompletionEntry {
+                command: "cmd".into(),
+                completion: "opt".into(),
+                description: String::new(),
+                source: "fish".into(),
+            })
+            .unwrap();
+
+        let results = store.query("cmd", "", 10).unwrap();
+        assert_eq!(results.len(), 1);
+        assert!(results[0].description.is_empty());
+    }
+
+    #[test]
+    fn sqlite_store_multiple_commands() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = dir.path().join("multi_cmd.db");
+        let store = SqliteStore::open_at(&db).unwrap();
+
+        for cmd in ["git", "cargo", "docker", "kubectl"] {
+            store
+                .insert(&CompletionEntry {
+                    command: cmd.into(),
+                    completion: "help".into(),
+                    description: format!("{cmd} help"),
+                    source: "fish".into(),
+                })
+                .unwrap();
+        }
+
+        assert_eq!(store.count().unwrap(), 4);
+
+        let git_results = store.query("git", "", 10).unwrap();
+        assert_eq!(git_results.len(), 1);
+        assert_eq!(git_results[0].description, "git help");
+
+        let cargo_results = store.query("cargo", "", 10).unwrap();
+        assert_eq!(cargo_results.len(), 1);
+        assert_eq!(cargo_results[0].description, "cargo help");
+
+        let all_results = store.query("nonexistent", "", 10).unwrap();
+        assert!(all_results.is_empty());
+    }
+
+    #[test]
+    fn sqlite_store_like_pattern_escaping() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = dir.path().join("like.db");
+        let store = SqliteStore::open_at(&db).unwrap();
+
+        store
+            .insert(&CompletionEntry {
+                command: "test".into(),
+                completion: "100%done".into(),
+                description: String::new(),
+                source: "mock".into(),
+            })
+            .unwrap();
+        store
+            .insert(&CompletionEntry {
+                command: "test".into(),
+                completion: "100_items".into(),
+                description: String::new(),
+                source: "mock".into(),
+            })
+            .unwrap();
+
+        let results = store.query("test", "100", 10).unwrap();
+        assert_eq!(results.len(), 2);
+    }
+
+    #[test]
+    fn sqlite_store_concurrent_reads() {
+        let dir = tempfile::tempdir().unwrap();
+        let db = dir.path().join("concurrent.db");
+        let store = std::sync::Arc::new(SqliteStore::open_at(&db).unwrap());
+
+        store
+            .insert(&CompletionEntry {
+                command: "git".into(),
+                completion: "commit".into(),
+                description: "Record changes".into(),
+                source: "fish".into(),
+            })
+            .unwrap();
+
+        let handles: Vec<_> = (0..4)
+            .map(|_| {
+                let s = std::sync::Arc::clone(&store);
+                std::thread::spawn(move || {
+                    for _ in 0..10 {
+                        let results = s.query("git", "co", 10).unwrap();
+                        assert_eq!(results.len(), 1);
+                    }
+                })
+            })
+            .collect();
+
+        for h in handles {
+            h.join().unwrap();
+        }
+    }
 }

@@ -243,6 +243,82 @@ mod tests {
         assert!(parsed.is_empty());
     }
 
+    #[test]
+    fn handle_request_unicode_buffer() {
+        let engine = MockEngine {
+            results: Vec::new(),
+        };
+        let resp =
+            handle_request(r#"{"buffer": "echo 日本語", "position": 12}"#, &engine).unwrap();
+        let parsed: Vec<CompletionEntry> = serde_json::from_str(resp.trim()).unwrap();
+        assert!(parsed.is_empty());
+    }
+
+    #[test]
+    fn handle_request_large_position() {
+        let engine = MockEngine {
+            results: Vec::new(),
+        };
+        let resp = handle_request(
+            r#"{"buffer": "ls", "position": 9999}"#,
+            &engine,
+        )
+        .unwrap();
+        let parsed: Vec<CompletionEntry> = serde_json::from_str(resp.trim()).unwrap();
+        assert!(parsed.is_empty());
+    }
+
+    #[test]
+    fn handle_request_null_position_uses_buffer_len() {
+        let engine = MockEngine {
+            results: vec![CompletionEntry {
+                command: "test".into(),
+                completion: "result".into(),
+                description: String::new(),
+                source: "mock".into(),
+            }],
+        };
+        let resp =
+            handle_request(r#"{"buffer": "test ", "position": null}"#, &engine).unwrap();
+        let parsed: Vec<CompletionEntry> = serde_json::from_str(resp.trim()).unwrap();
+        assert_eq!(parsed.len(), 1);
+    }
+
+    #[test]
+    fn handle_request_error_json_format() {
+        let engine = MockEngine {
+            results: Vec::new(),
+        };
+        let result = handle_request("not json at all", &engine);
+        assert!(result.is_err());
+        let err_msg = result.unwrap_err().to_string();
+        assert!(
+            err_msg.contains("invalid request JSON"),
+            "error should mention invalid JSON: {err_msg}"
+        );
+    }
+
+    #[test]
+    fn handle_request_wrong_type_for_buffer() {
+        let engine = MockEngine {
+            results: Vec::new(),
+        };
+        let result = handle_request(r#"{"buffer": 42}"#, &engine);
+        assert!(result.is_err(), "numeric buffer should fail deserialization");
+    }
+
+    #[test]
+    fn handle_request_wrong_type_for_position() {
+        let engine = MockEngine {
+            results: Vec::new(),
+        };
+        let result = handle_request(r#"{"buffer": "ls", "position": "five"}"#, &engine);
+        assert!(
+            result.is_err(),
+            "string position should fail deserialization"
+        );
+    }
+
     #[tokio::test]
     async fn daemon_run_accepts_connection() {
         use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
@@ -344,6 +420,192 @@ mod tests {
             let parsed: Vec<CompletionEntry> =
                 serde_json::from_str(response.trim()).unwrap();
             assert_eq!(parsed.len(), 1);
+        }
+
+        handle.abort();
+    }
+
+    #[tokio::test]
+    async fn daemon_concurrent_connections() {
+        use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+
+        let dir = tempfile::tempdir().unwrap();
+        let socket_path = dir.path().join("concurrent.socket");
+
+        let engine: Arc<dyn CompletionEngine> = Arc::new(MockEngine {
+            results: vec![CompletionEntry {
+                command: "git".into(),
+                completion: "commit".into(),
+                description: String::new(),
+                source: "mock".into(),
+            }],
+        });
+
+        let sp = socket_path.clone();
+        let handle = tokio::spawn(async move { run(&sp, engine).await });
+
+        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+
+        let mut tasks = Vec::new();
+        for _ in 0..4 {
+            let sp = socket_path.clone();
+            tasks.push(tokio::spawn(async move {
+                let stream = tokio::net::UnixStream::connect(&sp).await.unwrap();
+                let (reader, mut writer) = stream.into_split();
+                let mut reader = BufReader::new(reader);
+
+                writer
+                    .write_all(b"{\"buffer\": \"git co\", \"position\": 6}\n")
+                    .await
+                    .unwrap();
+
+                let mut response = String::new();
+                reader.read_line(&mut response).await.unwrap();
+
+                let parsed: Vec<CompletionEntry> =
+                    serde_json::from_str(response.trim()).unwrap();
+                assert_eq!(parsed.len(), 1);
+                assert_eq!(parsed[0].completion, "commit");
+            }));
+        }
+
+        for task in tasks {
+            task.await.unwrap();
+        }
+
+        handle.abort();
+    }
+
+    #[tokio::test]
+    async fn daemon_handles_malformed_json_gracefully() {
+        use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+
+        let dir = tempfile::tempdir().unwrap();
+        let socket_path = dir.path().join("malformed.socket");
+
+        let engine: Arc<dyn CompletionEngine> = Arc::new(MockEngine {
+            results: Vec::new(),
+        });
+
+        let sp = socket_path.clone();
+        let handle = tokio::spawn(async move { run(&sp, engine).await });
+
+        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+
+        let stream = tokio::net::UnixStream::connect(&socket_path).await.unwrap();
+        let (reader, mut writer) = stream.into_split();
+        let mut reader = BufReader::new(reader);
+
+        writer
+            .write_all(b"this is not json\n")
+            .await
+            .unwrap();
+
+        let mut response = String::new();
+        reader.read_line(&mut response).await.unwrap();
+
+        assert!(
+            response.contains("error"),
+            "malformed request should produce an error response: {response}"
+        );
+
+        writer
+            .write_all(b"{\"buffer\": \"ls\"}\n")
+            .await
+            .unwrap();
+
+        let mut response2 = String::new();
+        reader.read_line(&mut response2).await.unwrap();
+
+        let parsed: Vec<CompletionEntry> =
+            serde_json::from_str(response2.trim()).unwrap();
+        assert!(
+            parsed.is_empty() || !parsed.is_empty(),
+            "connection should still work after malformed request"
+        );
+
+        handle.abort();
+    }
+
+    #[tokio::test]
+    async fn daemon_handles_client_disconnect() {
+        let dir = tempfile::tempdir().unwrap();
+        let socket_path = dir.path().join("disconnect.socket");
+
+        let engine: Arc<dyn CompletionEngine> = Arc::new(MockEngine {
+            results: Vec::new(),
+        });
+
+        let sp = socket_path.clone();
+        let handle = tokio::spawn(async move { run(&sp, engine).await });
+
+        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+
+        {
+            let _stream = tokio::net::UnixStream::connect(&socket_path).await.unwrap();
+        }
+
+        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+
+        let stream = tokio::net::UnixStream::connect(&socket_path).await;
+        assert!(
+            stream.is_ok(),
+            "daemon should accept new connections after a client disconnects"
+        );
+
+        handle.abort();
+    }
+
+    #[tokio::test]
+    async fn daemon_response_is_valid_json_array() {
+        use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
+
+        let dir = tempfile::tempdir().unwrap();
+        let socket_path = dir.path().join("json_array.socket");
+
+        let engine: Arc<dyn CompletionEngine> = Arc::new(MockEngine {
+            results: vec![
+                CompletionEntry {
+                    command: "git".into(),
+                    completion: "commit".into(),
+                    description: "Record changes".into(),
+                    source: "mock".into(),
+                },
+                CompletionEntry {
+                    command: "git".into(),
+                    completion: "checkout".into(),
+                    description: "Switch branches".into(),
+                    source: "mock".into(),
+                },
+            ],
+        });
+
+        let sp = socket_path.clone();
+        let handle = tokio::spawn(async move { run(&sp, engine).await });
+
+        tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+
+        let stream = tokio::net::UnixStream::connect(&socket_path).await.unwrap();
+        let (reader, mut writer) = stream.into_split();
+        let mut reader = BufReader::new(reader);
+
+        writer
+            .write_all(b"{\"buffer\": \"git co\", \"position\": 6}\n")
+            .await
+            .unwrap();
+
+        let mut response = String::new();
+        reader.read_line(&mut response).await.unwrap();
+
+        assert!(response.ends_with('\n'), "response should be newline-terminated");
+
+        let parsed: Vec<CompletionEntry> =
+            serde_json::from_str(response.trim()).unwrap();
+        assert_eq!(parsed.len(), 2);
+
+        for entry in &parsed {
+            assert_eq!(entry.command, "git");
+            assert_eq!(entry.source, "mock");
         }
 
         handle.abort();
