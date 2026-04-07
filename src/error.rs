@@ -38,6 +38,7 @@ impl BmError {
     /// Construct a [`BmError::MutexPoisoned`] from a `PoisonError`.
     ///
     /// The generic `T` is erased — we only care about the error message.
+    #[must_use]
     pub fn mutex_poisoned<T>(
         context: &'static str,
         err: std::sync::PoisonError<T>,
