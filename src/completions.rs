@@ -259,9 +259,8 @@ fn path_completions(
     let (dir, file_prefix, base) = if prefix.ends_with('/') {
         // Trailing slash: list this directory's contents, no filter
         (Path::new(prefix).to_path_buf(), "", prefix)
-    } else if prefix.contains('/') {
+    } else if let Some(slash) = prefix.rfind('/') {
         // Mid-path: parent is the directory, filename portion is the filter
-        let slash = prefix.rfind('/').unwrap();
         let dir_part = &prefix[..=slash];
         let name_part = &prefix[slash + 1..];
         (Path::new(dir_part).to_path_buf(), name_part, dir_part)

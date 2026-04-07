@@ -88,8 +88,7 @@ impl FishSource {
                     }
                     "-d" if i + 1 < parts.len() => {
                         let rest = parts[i + 1..].join(" ");
-                        if rest.starts_with('\'') || rest.starts_with('"') {
-                            let quote = rest.chars().next().unwrap();
+                        if let Some(quote @ ('\'' | '"')) = rest.chars().next() {
                             if let Some(end) = rest[1..].find(quote) {
                                 description = rest[1..=end].to_string();
                             }
