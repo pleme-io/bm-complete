@@ -158,7 +158,7 @@ pub fn complete(
     let prefix = if buffer.ends_with(char::is_whitespace) || words.len() <= 1 {
         ""
     } else {
-        words.last().unwrap_or(&"")
+        words.last().copied().unwrap_or("")
     };
 
     let ctx = classify_context(command, prefix);
@@ -260,7 +260,6 @@ fn path_completions(
         // Trailing slash: list this directory's contents, no filter
         (Path::new(prefix).to_path_buf(), "", prefix)
     } else if let Some(slash) = prefix.rfind('/') {
-        // Mid-path: parent is the directory, filename portion is the filter
         let dir_part = &prefix[..=slash];
         let name_part = &prefix[slash + 1..];
         (Path::new(dir_part).to_path_buf(), name_part, dir_part)
