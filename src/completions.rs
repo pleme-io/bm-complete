@@ -98,6 +98,7 @@ impl PathProvider for MockPathProvider {
 
 /// Context classification for completion behavior.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[non_exhaustive]
 pub enum CompletionContext {
     /// cd, pushd, popd, z — directory-only results
     DirectoryNav,
