@@ -148,8 +148,7 @@ impl Store for SqliteStore {
                     source: row.get(3)?,
                 })
             })?
-            .filter_map(Result::ok)
-            .collect();
+            .collect::<Result<Vec<_>, _>>()?;
 
         Ok(entries)
     }
