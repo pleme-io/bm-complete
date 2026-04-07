@@ -148,4 +148,91 @@ mod tests {
         assert_eq!(results.len(), 1);
         assert_eq!(results[0].completion, "commit");
     }
+
+    #[test]
+    fn default_engine_construction() {
+        let cfg = crate::config::Config::default();
+        let engine = DefaultEngine::new(cfg);
+        assert!(engine.is_ok(), "DefaultEngine::new should succeed with default config");
+        let engine = engine.unwrap();
+        assert_eq!(engine.config().max_results, 50);
+    }
+
+    #[test]
+    fn default_engine_with_path_provider() {
+        let cfg = crate::config::Config::default();
+        let engine =
+            DefaultEngine::with_path_provider(cfg, Arc::new(FsPathProvider));
+        assert!(
+            engine.is_ok(),
+            "DefaultEngine::with_path_provider should succeed"
+        );
+    }
+
+    #[test]
+    fn default_engine_complete_empty_buffer() {
+        let cfg = crate::config::Config::default();
+        let engine = DefaultEngine::new(cfg).unwrap();
+        let results = engine.complete("", 0).unwrap();
+        assert!(results.is_empty());
+    }
+
+    #[test]
+    fn default_engine_store_is_accessible() {
+        let cfg = crate::config::Config::default();
+        let engine = DefaultEngine::new(cfg).unwrap();
+        let _count = engine.store().count().unwrap();
+    }
+
+    #[test]
+    fn mock_engine_empty_results() {
+        let engine = MockEngine {
+            results: Vec::new(),
+        };
+        let results = engine.complete("anything", 0).unwrap();
+        assert!(results.is_empty());
+    }
+
+    #[test]
+    fn mock_engine_ignores_buffer_content() {
+        let engine = MockEngine {
+            results: vec![CompletionEntry {
+                command: "test".into(),
+                completion: "fixed".into(),
+                description: String::new(),
+                source: "mock".into(),
+            }],
+        };
+        let r1 = engine.complete("foo", 3).unwrap();
+        let r2 = engine.complete("bar", 3).unwrap();
+        assert_eq!(r1, r2, "mock engine returns same results regardless of input");
+    }
+
+    #[test]
+    fn completion_engine_trait_object_safety() {
+        let engine: Box<dyn CompletionEngine> = Box::new(MockEngine {
+            results: vec![CompletionEntry {
+                command: "git".into(),
+                completion: "push".into(),
+                description: String::new(),
+                source: "mock".into(),
+            }],
+        });
+        let results = engine.complete("git pu", 6).unwrap();
+        assert_eq!(results.len(), 1);
+    }
+
+    #[test]
+    fn completion_engine_arc_dispatch() {
+        let engine: Arc<dyn CompletionEngine> = Arc::new(MockEngine {
+            results: vec![CompletionEntry {
+                command: "git".into(),
+                completion: "commit".into(),
+                description: String::new(),
+                source: "mock".into(),
+            }],
+        });
+        let results = engine.complete("git co", 6).unwrap();
+        assert_eq!(results.len(), 1);
+    }
 }

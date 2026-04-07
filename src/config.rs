@@ -161,4 +161,80 @@ mod tests {
         assert_eq!(cfg.fish_completion_dirs(), &["/custom/dir".to_string()]);
         assert_eq!(cfg.cache_dir(), "/custom/cache");
     }
+
+    // ── Config (production) tests ────────────────────────────────
+
+    #[test]
+    fn config_default_values() {
+        let cfg = Config::default();
+        assert_eq!(cfg.max_results, 50);
+        assert!(cfg.index_path);
+        assert!(cfg.index_man_pages);
+        assert!(cfg.index_help_flags);
+        assert_eq!(cfg.fish_completion_dirs.len(), 2);
+        assert!(cfg.fish_completion_dirs.contains(&"/usr/share/fish/completions".to_string()));
+        assert!(cfg
+            .fish_completion_dirs
+            .contains(&"/usr/local/share/fish/completions".to_string()));
+    }
+
+    #[test]
+    fn config_trait_delegates_correctly() {
+        let cfg = Config::default();
+        assert_eq!(cfg.max_results(), cfg.max_results);
+        assert_eq!(cfg.index_path(), cfg.index_path);
+        assert_eq!(cfg.fish_completion_dirs(), cfg.fish_completion_dirs.as_slice());
+        assert_eq!(cfg.cache_dir(), cfg.cache_dir.as_str());
+    }
+
+    #[test]
+    fn load_with_no_file_returns_defaults() {
+        let cfg = load(None).unwrap();
+        assert_eq!(cfg.max_results, 50);
+        assert!(cfg.index_path);
+    }
+
+    #[test]
+    fn load_with_yaml_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let yaml_path = dir.path().join("config.yaml");
+        std::fs::write(
+            &yaml_path,
+            "max_results: 25\nindex_path: false\nfish_completion_dirs:\n  - /custom/fish\n",
+        )
+        .unwrap();
+
+        let cfg = load(Some(&yaml_path)).unwrap();
+        assert_eq!(cfg.max_results, 25);
+        assert!(!cfg.index_path);
+        assert_eq!(cfg.fish_completion_dirs, vec!["/custom/fish".to_string()]);
+    }
+
+    #[test]
+    fn load_with_nonexistent_file_returns_defaults() {
+        let cfg = load(Some(std::path::Path::new("/nonexistent/config.yaml"))).unwrap();
+        assert_eq!(cfg.max_results, 50);
+    }
+
+    #[test]
+    fn load_with_partial_yaml() {
+        let dir = tempfile::tempdir().unwrap();
+        let yaml_path = dir.path().join("config.yaml");
+        std::fs::write(&yaml_path, "max_results: 10\n").unwrap();
+
+        let cfg = load(Some(&yaml_path)).unwrap();
+        assert_eq!(cfg.max_results, 10);
+        assert!(cfg.index_path, "unset fields should use defaults");
+        assert!(cfg.index_man_pages, "unset fields should use defaults");
+    }
+
+    #[test]
+    fn config_serde_roundtrip() {
+        let cfg = Config::default();
+        let json = serde_json::to_string(&cfg).unwrap();
+        let deserialized: Config = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.max_results, cfg.max_results);
+        assert_eq!(deserialized.index_path, cfg.index_path);
+        assert_eq!(deserialized.cache_dir, cfg.cache_dir);
+    }
 }
