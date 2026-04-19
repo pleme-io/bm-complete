@@ -1,10 +1,7 @@
 use anyhow::Result;
 use crate::error::BmError;
-use figment::{
-    providers::{Env, Format, Yaml},
-    Figment,
-};
 use serde::{Deserialize, Serialize};
+use shikumi::ProviderChain;
 use std::path::Path;
 
 /// Trait abstracting the configuration surface needed by the completion engine.
@@ -89,16 +86,21 @@ fn default_true() -> bool {
 /// Load configuration from an optional YAML file path, merging with
 /// environment variables prefixed with `BM_COMPLETE_`.
 ///
+/// Delegates to shikumi's `ProviderChain` for figment layering — keeps the
+/// `__` nested-key separator and the same YAML/env precedence (file wins
+/// over env, matching the pre-shikumi behaviour this function had).
+///
 /// # Errors
 ///
 /// Returns an error if the YAML file is malformed or extraction fails.
 pub fn load(path: Option<&Path>) -> Result<Config> {
-    let mut figment = Figment::new();
+    let mut chain = ProviderChain::new().with_env("BM_COMPLETE_");
     if let Some(p) = path {
-        figment = figment.merge(Yaml::file(p));
+        chain = chain.with_file(p);
     }
-    figment = figment.merge(Env::prefixed("BM_COMPLETE_").split("__"));
-    let config: Config = figment.extract().map_err(|e| BmError::Config(e.to_string()))?;
+    let config: Config = chain
+        .extract()
+        .map_err(|e| BmError::Config(e.to_string()))?;
     Ok(config)
 }
 
