@@ -23,6 +23,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -136,6 +137,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -180,6 +182,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -326,6 +329,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -349,6 +353,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -389,6 +394,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -412,6 +418,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -432,6 +439,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -472,6 +480,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [
         {
           "name": "bin_fixture",
@@ -630,6 +639,7 @@
       "features": [],
       "proc_macro": true,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -727,6 +737,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -749,6 +760,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -774,6 +786,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -860,6 +873,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -880,6 +894,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -945,6 +960,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -974,6 +990,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [
         {
           "name": "stdio-fixture",
@@ -1044,6 +1061,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -1140,6 +1158,7 @@
       ],
       "proc_macro": true,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -1245,6 +1264,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -1265,6 +1285,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -1285,6 +1306,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -1305,6 +1327,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -1325,6 +1348,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -1372,6 +1396,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -1437,6 +1462,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -1460,6 +1486,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -1539,6 +1566,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -1559,6 +1587,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -1583,6 +1612,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -1610,6 +1640,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -1741,6 +1772,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -1765,6 +1797,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -1812,6 +1845,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -1852,6 +1886,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2046,6 +2081,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2086,6 +2122,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2106,6 +2143,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2146,12 +2184,13 @@
       "source": {
         "kind": "git",
         "url": "https://github.com/pleme-io/hayai",
-        "rev": "4ff9270f9ebd2fc74f02b36902592bdeee3dffe1",
-        "sha256": "1kdz014dg14yw7f031nayx55dh542745d1k5brjqpw3ijk0snfgk"
+        "rev": "781520aa94f1a0ccf80239844fa53be354170d83",
+        "sha256": "1f6qhjjrl83nwrw0r1ncm33hgiir036kjgmgk4vsvv1kpmp9bnkm"
       },
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2250,6 +2289,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2274,6 +2314,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2350,6 +2391,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2372,6 +2414,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2392,6 +2435,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2415,6 +2459,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2443,6 +2488,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": "sqlite3",
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2529,6 +2575,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2569,6 +2616,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2592,6 +2640,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2618,6 +2667,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2676,6 +2726,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2700,6 +2751,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2843,6 +2895,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2883,6 +2936,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -2928,6 +2982,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2948,6 +3003,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -2970,6 +3026,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -3028,6 +3085,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -3115,6 +3173,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -3191,6 +3250,7 @@
       "features": [],
       "proc_macro": true,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -3306,6 +3366,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -3326,6 +3387,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -3344,6 +3406,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [
         {
           "name": "bm-complete",
@@ -3644,6 +3707,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -3793,6 +3857,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -3813,6 +3878,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -3881,6 +3947,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -3942,6 +4009,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -3993,6 +4061,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -4116,6 +4185,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -4181,6 +4251,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -4318,6 +4389,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -4418,6 +4490,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -4441,6 +4514,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -4595,6 +4669,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -4740,6 +4815,7 @@
       "features": [],
       "proc_macro": true,
       "build_script": "build/build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -4760,6 +4836,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -4780,6 +4857,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -4800,6 +4878,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -4826,6 +4905,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -4892,6 +4972,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -4914,6 +4995,7 @@
       ],
       "proc_macro": true,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -5018,6 +5100,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -5132,6 +5215,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -5172,6 +5256,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -5293,6 +5378,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -5505,6 +5591,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -5525,6 +5612,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -5583,6 +5671,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -5605,6 +5694,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -5645,6 +5735,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -5665,6 +5756,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -5695,6 +5787,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -5787,6 +5880,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -5889,6 +5983,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -5912,6 +6007,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -5959,6 +6055,7 @@
       "features": [],
       "proc_macro": true,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -6064,6 +6161,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -6307,6 +6405,7 @@
       "features": [],
       "proc_macro": true,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -6398,6 +6497,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -6506,6 +6606,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -6550,6 +6651,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -6692,6 +6794,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -6717,6 +6820,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -6812,6 +6916,7 @@
       "features": [],
       "proc_macro": true,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -6914,6 +7019,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -6957,6 +7063,7 @@
       ],
       "proc_macro": false,
       "build_script": "binding_rust/build.rs",
+      "links": "tree-sitter",
       "binaries": [],
       "lib_target": {
         "name": "tree_sitter",
@@ -7118,6 +7225,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": "bindings/rust/build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": {
         "name": "tree_sitter_bash",
@@ -7187,6 +7295,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": "tree-sitter-language",
       "binaries": [],
       "lib_target": {
         "name": "tree_sitter_language",
@@ -7213,6 +7322,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -7253,6 +7363,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -7273,6 +7384,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [
         {
           "name": "run-emitter-test-suite",
@@ -7304,6 +7416,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -7324,6 +7437,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -7344,6 +7458,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -7364,6 +7479,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [
         {
           "name": "exit",
@@ -7417,6 +7533,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -7468,6 +7585,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [
@@ -7512,6 +7630,7 @@
       ],
       "proc_macro": false,
       "build_script": null,
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -7534,6 +7653,7 @@
       ],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
@@ -7554,6 +7674,7 @@
       "features": [],
       "proc_macro": false,
       "build_script": "build.rs",
+      "links": null,
       "binaries": [],
       "lib_target": null,
       "dependencies": [],
