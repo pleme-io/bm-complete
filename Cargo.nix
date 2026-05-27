@@ -1188,8 +1188,8 @@ rec {
         workspace_member = null;
         src = pkgs.fetchgit {
           url = "https://github.com/pleme-io/hayai";
-          rev = "4ff9270f9ebd2fc74f02b36902592bdeee3dffe1";
-          sha256 = "1kdz014dg14yw7f031nayx55dh542745d1k5brjqpw3ijk0snfgk";
+          rev = "781520aa94f1a0ccf80239844fa53be354170d83";
+          sha256 = "1f6qhjjrl83nwrw0r1ncm33hgiir036kjgmgk4vsvv1kpmp9bnkm";
         };
         dependencies = [
           {
@@ -1968,7 +1968,7 @@ rec {
       };
       "pleme-bm-complete" = rec {
         crateName = "pleme-bm-complete";
-        version = "0.1.2";
+        version = "0.1.3";
         edition = "2024";
         crateBin = [
           {
