@@ -392,7 +392,7 @@ dependencies = [
 [[package]]
 name = "hayai"
 version = "0.1.1"
-source = "git+https://github.com/pleme-io/hayai#b5d00566d2ab83b7241817798d8b0ce5eb540e40"
+source = "git+https://github.com/pleme-io/hayai#4ff9270f9ebd2fc74f02b36902592bdeee3dffe1"
 dependencies = [
  "regex",
  "serde",
@@ -959,7 +959,7 @@ dependencies = [
 [[package]]
 name = "shikumi"
 version = "0.1.0"
-source = "git+https://github.com/pleme-io/shikumi#ff0dbab8060acb97bb1daa11181664c69c069aa6"
+source = "git+https://github.com/pleme-io/shikumi#0cda5c4bb596d1e9b816e16be8a3291ffb7a85f9"
 dependencies = [
  "arc-swap",
  "async-trait",
