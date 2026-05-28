@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "workspace": {
     "root": "/Users/drzzln/code/github/pleme-io/bm-complete",
     "members": [
@@ -16,7 +16,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/ahash/0.8.12/download",
+        "url": "https://static.crates.io/crates/ahash/ahash-0.8.12.crate",
         "sha256": "5a15f179cd60c4584b8a8c596927aadc462e27f2ca70c04e0071964a73ba7a75",
         "name_with_ext": "ahash-0.8.12.tar.gz"
       },
@@ -58,7 +58,7 @@
         },
         {
           "name": "zerocopy",
-          "package_key": "zerocopy-0.8.48",
+          "package_key": "zerocopy-0.8.49",
           "kind": "normal",
           "features": [
             "simd"
@@ -91,7 +91,7 @@
         },
         {
           "name": "zerocopy",
-          "package_key": "zerocopy-0.8.48",
+          "package_key": "zerocopy-0.8.49",
           "kind": "normal",
           "features": [
             "simd"
@@ -119,6 +119,22 @@
             "rename": "cfg_if"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "ahash",
+        "version": "0.8.12",
+        "edition": "2018",
+        "crateRenames": {
+          "cfg-if": [
+            {
+              "version": "1.0.4",
+              "rename": "cfg_if"
+            }
+          ]
+        },
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=ahash;"
       }
     },
     "aho-corasick-1.1.4": {
@@ -127,7 +143,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/aho-corasick/1.1.4/download",
+        "url": "https://static.crates.io/crates/aho-corasick/aho-corasick-1.1.4.crate",
         "sha256": "ddd31a130427c27518df266943a5308ed92d4b226cc639f5a8f1002816174301",
         "name_with_ext": "aho-corasick-1.1.4.tar.gz"
       },
@@ -143,7 +159,7 @@
       "dependencies": [
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -154,7 +170,7 @@
       "runtime_dependencies": [
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -163,7 +179,18 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "aho-corasick",
+        "version": "1.1.4",
+        "edition": "2021",
+        "features": [
+          "perf-literal",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=aho_corasick;"
+      }
     },
     "anstream-1.0.0": {
       "name": "anstream",
@@ -171,7 +198,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/anstream/1.0.0/download",
+        "url": "https://static.crates.io/crates/anstream/anstream-1.0.0.crate",
         "sha256": "824a212faf96e9acacdbd09febd34438f8f711fb84e09a8916013cd7815ca28d",
         "name_with_ext": "anstream-1.0.0.tar.gz"
       },
@@ -311,6 +338,32 @@
             "rename": "anstyle_query"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "anstream",
+        "version": "1.0.0",
+        "edition": "2021",
+        "features": [
+          "auto",
+          "default",
+          "wincon"
+        ],
+        "crateRenames": {
+          "anstyle-parse": [
+            {
+              "version": "1.0.0",
+              "rename": "anstyle_parse"
+            }
+          ],
+          "anstyle-query": [
+            {
+              "version": "1.1.5",
+              "rename": "anstyle_query"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=anstream;"
       }
     },
     "anstyle-1.0.14": {
@@ -319,7 +372,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/anstyle/1.0.14/download",
+        "url": "https://static.crates.io/crates/anstyle/anstyle-1.0.14.crate",
         "sha256": "940b3a0ca603d1eade50a4846a2afffd5ef57a9feac2c0e2ec2e14f9ead76000",
         "name_with_ext": "anstyle-1.0.14.tar.gz"
       },
@@ -335,7 +388,18 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "anstyle",
+        "version": "1.0.14",
+        "edition": "2021",
+        "features": [
+          "default",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=anstyle;"
+      }
     },
     "anstyle-parse-1.0.0": {
       "name": "anstyle-parse",
@@ -343,7 +407,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/anstyle-parse/1.0.0/download",
+        "url": "https://static.crates.io/crates/anstyle-parse/anstyle-parse-1.0.0.crate",
         "sha256": "52ce7f38b242319f7cabaa6813055467063ecdc9d355bbb4ce0c68908cd8130e",
         "name_with_ext": "anstyle-parse-1.0.0.tar.gz"
       },
@@ -379,7 +443,18 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "anstyle-parse",
+        "version": "1.0.0",
+        "edition": "2021",
+        "features": [
+          "default",
+          "utf8"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=anstyle_parse;"
+      }
     },
     "anstyle-query-1.1.5": {
       "name": "anstyle-query",
@@ -387,7 +462,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/anstyle-query/1.1.5/download",
+        "url": "https://static.crates.io/crates/anstyle-query/anstyle-query-1.1.5.crate",
         "sha256": "40c48f72fd53cd289104fc64099abca73db4166ad86ea0b4341abe65af83dadc",
         "name_with_ext": "anstyle-query-1.1.5.tar.gz"
       },
@@ -400,7 +475,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "anstyle-query",
+        "version": "1.1.5",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=anstyle_query;"
+      }
     },
     "anyhow-1.0.102": {
       "name": "anyhow",
@@ -408,7 +490,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/anyhow/1.0.102/download",
+        "url": "https://static.crates.io/crates/anyhow/anyhow-1.0.102.crate",
         "sha256": "7f202df86484c868dbad7eaa557ef785d5c66295e41b460ef922eca0723b842c",
         "name_with_ext": "anyhow-1.0.102.tar.gz"
       },
@@ -424,7 +506,19 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "anyhow",
+        "version": "1.0.102",
+        "edition": "2021",
+        "features": [
+          "default",
+          "std"
+        ],
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=anyhow;"
+      }
     },
     "arc-swap-1.9.1": {
       "name": "arc-swap",
@@ -432,7 +526,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/arc-swap/1.9.1/download",
+        "url": "https://static.crates.io/crates/arc-swap/arc-swap-1.9.1.crate",
         "sha256": "6a3a1fd6f75306b68087b831f025c712524bcb19aad54e557b1129cfa0a2b207",
         "name_with_ext": "arc-swap-1.9.1.tar.gz"
       },
@@ -465,7 +559,14 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "arc-swap",
+        "version": "1.9.1",
+        "edition": "2018",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=arc_swap;"
+      }
     },
     "assert_cmd-2.2.2": {
       "name": "assert_cmd",
@@ -473,7 +574,7 @@
       "edition": "2024",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/assert_cmd/2.2.2/download",
+        "url": "https://static.crates.io/crates/assert_cmd/assert_cmd-2.2.2.crate",
         "sha256": "2aa3a22042e45de04255c7bf3626e239f450200fd0493c1e382263544b20aea6",
         "name_with_ext": "assert_cmd-2.2.2.tar.gz"
       },
@@ -624,6 +725,34 @@
             "rename": "wait_timeout"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "assert_cmd",
+        "version": "2.2.2",
+        "edition": "2024",
+        "crateRenames": {
+          "predicates-core": [
+            {
+              "version": "1.0.10",
+              "rename": "predicates_core"
+            }
+          ],
+          "predicates-tree": [
+            {
+              "version": "1.0.13",
+              "rename": "predicates_tree"
+            }
+          ],
+          "wait-timeout": [
+            {
+              "version": "0.2.1",
+              "rename": "wait_timeout"
+            }
+          ]
+        },
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=assert_cmd;"
       }
     },
     "async-trait-0.1.89": {
@@ -632,7 +761,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/async-trait/0.1.89/download",
+        "url": "https://static.crates.io/crates/async-trait/async-trait-0.1.89.crate",
         "sha256": "9035ad2d096bed7955a320ee7e2230574d28fd3c3a0f186cbea1ff3c7eed5dbb",
         "name_with_ext": "async-trait-0.1.89.tar.gz"
       },
@@ -722,6 +851,22 @@
             "rename": "proc_macro2"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "async-trait",
+        "version": "0.1.89",
+        "edition": "2021",
+        "crateRenames": {
+          "proc-macro2": [
+            {
+              "version": "1.0.106",
+              "rename": "proc_macro2"
+            }
+          ]
+        },
+        "release": true,
+        "procMacro": true,
+        "preBuild": "export CARGO_CRATE_NAME=async_trait;"
       }
     },
     "autocfg-1.5.1": {
@@ -730,7 +875,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/autocfg/1.5.1/download",
+        "url": "https://static.crates.io/crates/autocfg/autocfg-1.5.1.crate",
         "sha256": "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53",
         "name_with_ext": "autocfg-1.5.1.tar.gz"
       },
@@ -743,7 +888,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "autocfg",
+        "version": "1.5.1",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=autocfg;"
+      }
     },
     "bitflags-2.11.1": {
       "name": "bitflags",
@@ -751,7 +903,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/bitflags/2.11.1/download",
+        "url": "https://static.crates.io/crates/bitflags/bitflags-2.11.1.crate",
         "sha256": "c4512299f36f043ab09a583e57bceb5a5aab7a73db1805848e8fef3c9e8c78b3",
         "name_with_ext": "bitflags-2.11.1.tar.gz"
       },
@@ -766,7 +918,17 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "bitflags",
+        "version": "2.11.1",
+        "edition": "2021",
+        "features": [
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=bitflags;"
+      }
     },
     "bstr-1.12.1": {
       "name": "bstr",
@@ -774,7 +936,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/bstr/1.12.1/download",
+        "url": "https://static.crates.io/crates/bstr/bstr-1.12.1.crate",
         "sha256": "63044e1ae8e69f3b5a92c736ca6269b8d12fa7efe39bf34ddb06d102cf0e2cab",
         "name_with_ext": "bstr-1.12.1.tar.gz"
       },
@@ -792,7 +954,7 @@
       "dependencies": [
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -821,7 +983,7 @@
       "runtime_dependencies": [
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -855,6 +1017,27 @@
             "rename": "regex_automata"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "bstr",
+        "version": "1.12.1",
+        "edition": "2021",
+        "features": [
+          "alloc",
+          "default",
+          "std",
+          "unicode"
+        ],
+        "crateRenames": {
+          "regex-automata": [
+            {
+              "version": "0.4.14",
+              "rename": "regex_automata"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=bstr;"
       }
     },
     "bytes-1.11.1": {
@@ -863,7 +1046,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/bytes/1.11.1/download",
+        "url": "https://static.crates.io/crates/bytes/bytes-1.11.1.crate",
         "sha256": "1e748733b7cbc798e1434b6ac524f0c1ff2ab456fe201501e6497c8417a4fc33",
         "name_with_ext": "bytes-1.11.1.tar.gz"
       },
@@ -879,7 +1062,18 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "bytes",
+        "version": "1.11.1",
+        "edition": "2021",
+        "features": [
+          "default",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=bytes;"
+      }
     },
     "cc-1.2.62": {
       "name": "cc",
@@ -887,7 +1081,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/cc/1.2.62/download",
+        "url": "https://static.crates.io/crates/cc/cc-1.2.62.crate",
         "sha256": "a1dce859f0832a7d088c4f1119888ab94ef4b5d6795d1ce05afb7fe159d79f98",
         "name_with_ext": "cc-1.2.62.tar.gz"
       },
@@ -945,6 +1139,21 @@
             "rename": "find_msvc_tools"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "cc",
+        "version": "1.2.62",
+        "edition": "2018",
+        "crateRenames": {
+          "find-msvc-tools": [
+            {
+              "version": "0.1.9",
+              "rename": "find_msvc_tools"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=cc;"
       }
     },
     "cfg-if-1.0.4": {
@@ -953,7 +1162,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/cfg-if/1.0.4/download",
+        "url": "https://static.crates.io/crates/cfg-if/cfg-if-1.0.4.crate",
         "sha256": "9330f8b2ff13f34540b44e946ef35111825727b38d33286ef986142615121801",
         "name_with_ext": "cfg-if-1.0.4.tar.gz"
       },
@@ -966,7 +1175,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "cfg-if",
+        "version": "1.0.4",
+        "edition": "2018",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=cfg_if;"
+      }
     },
     "clap-4.6.1": {
       "name": "clap",
@@ -974,7 +1190,7 @@
       "edition": "2024",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/clap/4.6.1/download",
+        "url": "https://static.crates.io/crates/clap/clap-4.6.1.crate",
         "sha256": "1ddb117e43bbf7dacf0a4190fef4d345b9bad68dfc649cb349e7d17d28428e51",
         "name_with_ext": "clap-4.6.1.tar.gz"
       },
@@ -1039,7 +1255,24 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "clap",
+        "version": "4.6.1",
+        "edition": "2024",
+        "features": [
+          "color",
+          "default",
+          "derive",
+          "error-context",
+          "help",
+          "std",
+          "suggestions",
+          "usage"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=clap;"
+      }
     },
     "clap_builder-4.6.0": {
       "name": "clap_builder",
@@ -1047,7 +1280,7 @@
       "edition": "2024",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/clap_builder/4.6.0/download",
+        "url": "https://static.crates.io/crates/clap_builder/clap_builder-4.6.0.crate",
         "sha256": "714a53001bf66416adb0e2ef5ac857140e7dc3a0c48fb28b2f10762fc4b5069f",
         "name_with_ext": "clap_builder-4.6.0.tar.gz"
       },
@@ -1141,7 +1374,22 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "clap_builder",
+        "version": "4.6.0",
+        "edition": "2024",
+        "features": [
+          "color",
+          "error-context",
+          "help",
+          "std",
+          "suggestions",
+          "usage"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=clap_builder;"
+      }
     },
     "clap_derive-4.6.1": {
       "name": "clap_derive",
@@ -1149,7 +1397,7 @@
       "edition": "2024",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/clap_derive/4.6.1/download",
+        "url": "https://static.crates.io/crates/clap_derive/clap_derive-4.6.1.crate",
         "sha256": "f2ce8604710f6733aa641a2b3731eaa1e8b3d9973d5e3565da11800813f997a9",
         "name_with_ext": "clap_derive-4.6.1.tar.gz"
       },
@@ -1249,6 +1497,25 @@
             "rename": "proc_macro2"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "clap_derive",
+        "version": "4.6.1",
+        "edition": "2024",
+        "features": [
+          "default"
+        ],
+        "crateRenames": {
+          "proc-macro2": [
+            {
+              "version": "1.0.106",
+              "rename": "proc_macro2"
+            }
+          ]
+        },
+        "release": true,
+        "procMacro": true,
+        "preBuild": "export CARGO_CRATE_NAME=clap_derive;"
       }
     },
     "clap_lex-1.1.0": {
@@ -1257,7 +1524,7 @@
       "edition": "2024",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/clap_lex/1.1.0/download",
+        "url": "https://static.crates.io/crates/clap_lex/clap_lex-1.1.0.crate",
         "sha256": "c8d4a3bb8b1e0c1050499d1815f5ab16d04f0959b233085fb31653fbfc9d98f9",
         "name_with_ext": "clap_lex-1.1.0.tar.gz"
       },
@@ -1270,7 +1537,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "clap_lex",
+        "version": "1.1.0",
+        "edition": "2024",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=clap_lex;"
+      }
     },
     "colorchoice-1.0.5": {
       "name": "colorchoice",
@@ -1278,7 +1552,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/colorchoice/1.0.5/download",
+        "url": "https://static.crates.io/crates/colorchoice/colorchoice-1.0.5.crate",
         "sha256": "1d07550c9036bf2ae0c684c4297d503f838287c83c53686d05370d0e139ae570",
         "name_with_ext": "colorchoice-1.0.5.tar.gz"
       },
@@ -1291,7 +1565,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "colorchoice",
+        "version": "1.0.5",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=colorchoice;"
+      }
     },
     "diff-0.1.13": {
       "name": "diff",
@@ -1299,7 +1580,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/diff/0.1.13/download",
+        "url": "https://static.crates.io/crates/diff/diff-0.1.13.crate",
         "sha256": "56254986775e3233ffa9c4d7d3faaf6d36a2c09d30b20687e9f88bc8bafc16c8",
         "name_with_ext": "diff-0.1.13.tar.gz"
       },
@@ -1312,7 +1593,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "diff",
+        "version": "0.1.13",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=diff;"
+      }
     },
     "difflib-0.4.0": {
       "name": "difflib",
@@ -1320,7 +1608,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/difflib/0.4.0/download",
+        "url": "https://static.crates.io/crates/difflib/difflib-0.4.0.crate",
         "sha256": "6184e33543162437515c2e2b48714794e37845ec9851711914eec9d308f6ebe8",
         "name_with_ext": "difflib-0.4.0.tar.gz"
       },
@@ -1333,7 +1621,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "difflib",
+        "version": "0.4.0",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=difflib;"
+      }
     },
     "dirs-6.0.0": {
       "name": "dirs",
@@ -1341,7 +1636,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/dirs/6.0.0/download",
+        "url": "https://static.crates.io/crates/dirs/dirs-6.0.0.crate",
         "sha256": "c3e8aa94d75141228480295a7d0e7feb620b1a5ad9f12bc40be62411e38cce4e",
         "name_with_ext": "dirs-6.0.0.tar.gz"
       },
@@ -1381,6 +1676,21 @@
             "rename": "dirs_sys"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "dirs",
+        "version": "6.0.0",
+        "edition": "2015",
+        "crateRenames": {
+          "dirs-sys": [
+            {
+              "version": "0.5.0",
+              "rename": "dirs_sys"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=dirs;"
       }
     },
     "dirs-sys-0.5.0": {
@@ -1389,7 +1699,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/dirs-sys/0.5.0/download",
+        "url": "https://static.crates.io/crates/dirs-sys/dirs-sys-0.5.0.crate",
         "sha256": "e01a3366d27ee9890022452ee61b2b63a67e6f13f58900b651ff5665f0bb1fab",
         "name_with_ext": "dirs-sys-0.5.0.tar.gz"
       },
@@ -1447,6 +1757,21 @@
             "rename": "option_ext"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "dirs-sys",
+        "version": "0.5.0",
+        "edition": "2015",
+        "crateRenames": {
+          "option-ext": [
+            {
+              "version": "0.2.0",
+              "rename": "option_ext"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=dirs_sys;"
       }
     },
     "equivalent-1.0.2": {
@@ -1455,7 +1780,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/equivalent/1.0.2/download",
+        "url": "https://static.crates.io/crates/equivalent/equivalent-1.0.2.crate",
         "sha256": "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f",
         "name_with_ext": "equivalent-1.0.2.tar.gz"
       },
@@ -1468,7 +1793,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "equivalent",
+        "version": "1.0.2",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=equivalent;"
+      }
     },
     "errno-0.3.14": {
       "name": "errno",
@@ -1476,7 +1808,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/errno/0.3.14/download",
+        "url": "https://static.crates.io/crates/errno/errno-0.3.14.crate",
         "sha256": "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb",
         "name_with_ext": "errno-0.3.14.tar.gz"
       },
@@ -1548,7 +1880,18 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "errno",
+        "version": "0.3.14",
+        "edition": "2018",
+        "features": [
+          "default",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=errno;"
+      }
     },
     "fallible-iterator-0.3.0": {
       "name": "fallible-iterator",
@@ -1556,7 +1899,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/fallible-iterator/0.3.0/download",
+        "url": "https://static.crates.io/crates/fallible-iterator/fallible-iterator-0.3.0.crate",
         "sha256": "2acce4a10f12dc2fb14a218589d4f1f62ef011b2d0cc4b3cb1bba8e94da14649",
         "name_with_ext": "fallible-iterator-0.3.0.tar.gz"
       },
@@ -1572,7 +1915,18 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "fallible-iterator",
+        "version": "0.3.0",
+        "edition": "2018",
+        "features": [
+          "alloc",
+          "default"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=fallible_iterator;"
+      }
     },
     "fallible-streaming-iterator-0.1.9": {
       "name": "fallible-streaming-iterator",
@@ -1580,7 +1934,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/fallible-streaming-iterator/0.1.9/download",
+        "url": "https://static.crates.io/crates/fallible-streaming-iterator/fallible-streaming-iterator-0.1.9.crate",
         "sha256": "7360491ce676a36bf9bb3c56c1aa791658183a54d2744120f27285738d90465a",
         "name_with_ext": "fallible-streaming-iterator-0.1.9.tar.gz"
       },
@@ -1593,7 +1947,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "fallible-streaming-iterator",
+        "version": "0.1.9",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=fallible_streaming_iterator;"
+      }
     },
     "fastrand-2.4.1": {
       "name": "fastrand",
@@ -1601,7 +1962,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/fastrand/2.4.1/download",
+        "url": "https://static.crates.io/crates/fastrand/fastrand-2.4.1.crate",
         "sha256": "9f1f227452a390804cdb637b74a86990f2a7d7ba4b7d5693aac9b4dd6defd8d6",
         "name_with_ext": "fastrand-2.4.1.tar.gz"
       },
@@ -1618,7 +1979,19 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "fastrand",
+        "version": "2.4.1",
+        "edition": "2018",
+        "features": [
+          "alloc",
+          "default",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=fastrand;"
+      }
     },
     "figment-0.10.19": {
       "name": "figment",
@@ -1626,7 +1999,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/figment/0.10.19/download",
+        "url": "https://static.crates.io/crates/figment/figment-0.10.19.crate",
         "sha256": "8cb01cd46b0cf372153850f4c6c272d9cbea2da513e07538405148f95bd789f3",
         "name_with_ext": "figment-0.10.19.tar.gz"
       },
@@ -1757,7 +2130,23 @@
           "target": null
         }
       ],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "figment",
+        "version": "0.10.19",
+        "edition": "2018",
+        "features": [
+          "env",
+          "parse-value",
+          "pear",
+          "serde_yaml",
+          "toml",
+          "yaml"
+        ],
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=figment;"
+      }
     },
     "find-msvc-tools-0.1.9": {
       "name": "find-msvc-tools",
@@ -1765,7 +2154,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/find-msvc-tools/0.1.9/download",
+        "url": "https://static.crates.io/crates/find-msvc-tools/find-msvc-tools-0.1.9.crate",
         "sha256": "5baebc0774151f905a1a2cc41989300b1e6fbb29aff0ceffa1064fdd3088d582",
         "name_with_ext": "find-msvc-tools-0.1.9.tar.gz"
       },
@@ -1778,7 +2167,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "find-msvc-tools",
+        "version": "0.1.9",
+        "edition": "2018",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=find_msvc_tools;"
+      }
     },
     "float-cmp-0.10.0": {
       "name": "float-cmp",
@@ -1786,7 +2182,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/float-cmp/0.10.0/download",
+        "url": "https://static.crates.io/crates/float-cmp/float-cmp-0.10.0.crate",
         "sha256": "b09cf3155332e944990140d967ff5eceb70df778b34f77d8075db46e4704e6d8",
         "name_with_ext": "float-cmp-0.10.0.tar.gz"
       },
@@ -1830,6 +2226,26 @@
             "rename": "num_traits"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "float-cmp",
+        "version": "0.10.0",
+        "edition": "2018",
+        "features": [
+          "default",
+          "num-traits",
+          "ratio"
+        ],
+        "crateRenames": {
+          "num-traits": [
+            {
+              "version": "0.2.19",
+              "rename": "num_traits"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=float_cmp;"
       }
     },
     "fsevent-sys-4.1.0": {
@@ -1838,7 +2254,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/fsevent-sys/4.1.0/download",
+        "url": "https://static.crates.io/crates/fsevent-sys/fsevent-sys-4.1.0.crate",
         "sha256": "76ee7a02da4d231650c7cea31349b889be2f45ddb3ef3032d2ec8185f6313fd2",
         "name_with_ext": "fsevent-sys-4.1.0.tar.gz"
       },
@@ -1871,7 +2287,14 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "fsevent-sys",
+        "version": "4.1.0",
+        "edition": "2018",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=fsevent_sys;"
+      }
     },
     "getrandom-0.4.2": {
       "name": "getrandom",
@@ -1879,7 +2302,7 @@
       "edition": "2024",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/getrandom/0.4.2/download",
+        "url": "https://static.crates.io/crates/getrandom/getrandom-0.4.2.crate",
         "sha256": "0de51e6874e94e7bf76d726fc5d13ba782deca734ff60d5bb2fb2607c7406555",
         "name_with_ext": "getrandom-0.4.2.tar.gz"
       },
@@ -2063,6 +2486,22 @@
             "rename": "cfg_if"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "getrandom",
+        "version": "0.4.2",
+        "edition": "2024",
+        "crateRenames": {
+          "cfg-if": [
+            {
+              "version": "1.0.4",
+              "rename": "cfg_if"
+            }
+          ]
+        },
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=getrandom;"
       }
     },
     "hashbrown-0.14.5": {
@@ -2071,7 +2510,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/hashbrown/0.14.5/download",
+        "url": "https://static.crates.io/crates/hashbrown/hashbrown-0.14.5.crate",
         "sha256": "e5274423e17b7c9fc20b6e7e208532f9b19825d82dfd615708b70edd83df41f1",
         "name_with_ext": "hashbrown-0.14.5.tar.gz"
       },
@@ -2107,7 +2546,18 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "hashbrown",
+        "version": "0.14.5",
+        "edition": "2021",
+        "features": [
+          "ahash",
+          "inline-more"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=hashbrown;"
+      }
     },
     "hashbrown-0.17.1": {
       "name": "hashbrown",
@@ -2115,7 +2565,7 @@
       "edition": "2024",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/hashbrown/0.17.1/download",
+        "url": "https://static.crates.io/crates/hashbrown/hashbrown-0.17.1.crate",
         "sha256": "ed5909b6e89a2db4456e54cd5f673791d7eca6732202bbf2a9cc504fe2f9b84a",
         "name_with_ext": "hashbrown-0.17.1.tar.gz"
       },
@@ -2128,7 +2578,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "hashbrown",
+        "version": "0.17.1",
+        "edition": "2024",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=hashbrown;"
+      }
     },
     "hashlink-0.9.1": {
       "name": "hashlink",
@@ -2136,7 +2593,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/hashlink/0.9.1/download",
+        "url": "https://static.crates.io/crates/hashlink/hashlink-0.9.1.crate",
         "sha256": "6ba4ff7128dee98c7dc9794b6a411377e1404dba1c97deb8d1a55297bd25d8af",
         "name_with_ext": "hashlink-0.9.1.tar.gz"
       },
@@ -2175,7 +2632,14 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "hashlink",
+        "version": "0.9.1",
+        "edition": "2018",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=hashlink;"
+      }
     },
     "hayai-0.1.1": {
       "name": "hayai",
@@ -2274,7 +2738,14 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "hayai",
+        "version": "0.1.1",
+        "edition": "2024",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=hayai;"
+      }
     },
     "heck-0.5.0": {
       "name": "heck",
@@ -2282,7 +2753,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/heck/0.5.0/download",
+        "url": "https://static.crates.io/crates/heck/heck-0.5.0.crate",
         "sha256": "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea",
         "name_with_ext": "heck-0.5.0.tar.gz"
       },
@@ -2295,7 +2766,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "heck",
+        "version": "0.5.0",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=heck;"
+      }
     },
     "indexmap-2.14.0": {
       "name": "indexmap",
@@ -2303,7 +2781,7 @@
       "edition": "2024",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/indexmap/2.14.0/download",
+        "url": "https://static.crates.io/crates/indexmap/indexmap-2.14.0.crate",
         "sha256": "d466e9454f08e4a911e14806c24e16fba1b4c121d1ea474396f396069cf949d9",
         "name_with_ext": "indexmap-2.14.0.tar.gz"
       },
@@ -2376,7 +2854,19 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "indexmap",
+        "version": "2.14.0",
+        "edition": "2024",
+        "features": [
+          "default",
+          "serde",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=indexmap;"
+      }
     },
     "inlinable_string-0.1.15": {
       "name": "inlinable_string",
@@ -2384,7 +2874,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/inlinable_string/0.1.15/download",
+        "url": "https://static.crates.io/crates/inlinable_string/inlinable_string-0.1.15.crate",
         "sha256": "c8fae54786f62fb2918dcfae3d568594e50eb9b5c25bf04371af6fe7516452fb",
         "name_with_ext": "inlinable_string-0.1.15.tar.gz"
       },
@@ -2397,7 +2887,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "inlinable_string",
+        "version": "0.1.15",
+        "edition": "2018",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=inlinable_string;"
+      }
     },
     "is_terminal_polyfill-1.70.2": {
       "name": "is_terminal_polyfill",
@@ -2405,7 +2902,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/is_terminal_polyfill/1.70.2/download",
+        "url": "https://static.crates.io/crates/is_terminal_polyfill/is_terminal_polyfill-1.70.2.crate",
         "sha256": "a6cb138bb79a146c1bd460005623e142ef0181e3d0219cb493e02f7d08a35695",
         "name_with_ext": "is_terminal_polyfill-1.70.2.tar.gz"
       },
@@ -2420,7 +2917,17 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "is_terminal_polyfill",
+        "version": "1.70.2",
+        "edition": "2021",
+        "features": [
+          "default"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=is_terminal_polyfill;"
+      }
     },
     "itoa-1.0.18": {
       "name": "itoa",
@@ -2428,7 +2935,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/itoa/1.0.18/download",
+        "url": "https://static.crates.io/crates/itoa/itoa-1.0.18.crate",
         "sha256": "8f42a60cbdf9a97f5d2305f08a87dc4e09308d1276d28c869c684d7777685682",
         "name_with_ext": "itoa-1.0.18.tar.gz"
       },
@@ -2441,7 +2948,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "itoa",
+        "version": "1.0.18",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=itoa;"
+      }
     },
     "libc-0.2.186": {
       "name": "libc",
@@ -2449,7 +2963,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/libc/0.2.186/download",
+        "url": "https://static.crates.io/crates/libc/libc-0.2.186.crate",
         "sha256": "68ab91017fe16c622486840e4c83c9a37afeff978bd239b5293d61ece587de66",
         "name_with_ext": "libc-0.2.186.tar.gz"
       },
@@ -2465,7 +2979,19 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "libc",
+        "version": "0.2.186",
+        "edition": "2021",
+        "features": [
+          "default",
+          "std"
+        ],
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=libc;"
+      }
     },
     "libsqlite3-sys-0.30.1": {
       "name": "libsqlite3-sys",
@@ -2473,7 +2999,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/libsqlite3-sys/0.30.1/download",
+        "url": "https://static.crates.io/crates/libsqlite3-sys/libsqlite3-sys-0.30.1.crate",
         "sha256": "2e99fb7a497b1e3339bc746195567ed8d3e24945ecd636e3619d20b9de9e9149",
         "name_with_ext": "libsqlite3-sys-0.30.1.tar.gz"
       },
@@ -2557,6 +3083,32 @@
             "rename": "pkg_config"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "libsqlite3-sys",
+        "version": "0.30.1",
+        "edition": "2021",
+        "features": [
+          "bundled",
+          "bundled_bindings",
+          "cc",
+          "default",
+          "min_sqlite_version_3_14_0",
+          "pkg-config",
+          "vcpkg"
+        ],
+        "crateRenames": {
+          "pkg-config": [
+            {
+              "version": "0.3.33",
+              "rename": "pkg_config"
+            }
+          ]
+        },
+        "release": true,
+        "build": "build.rs",
+        "links": "sqlite3",
+        "preBuild": "export CARGO_CRATE_NAME=libsqlite3_sys;"
       }
     },
     "lock_api-0.4.14": {
@@ -2565,7 +3117,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/lock_api/0.4.14/download",
+        "url": "https://static.crates.io/crates/lock_api/lock_api-0.4.14.crate",
         "sha256": "224399e74b87b5f3557511d98dff8b14089b3dadafcab6bb93eab67d3aace965",
         "name_with_ext": "lock_api-0.4.14.tar.gz"
       },
@@ -2601,7 +3153,18 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "lock_api",
+        "version": "0.4.14",
+        "edition": "2021",
+        "features": [
+          "atomic_usize",
+          "default"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=lock_api;"
+      }
     },
     "log-0.4.30": {
       "name": "log",
@@ -2609,7 +3172,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/log/0.4.30/download",
+        "url": "https://static.crates.io/crates/log/log-0.4.30.crate",
         "sha256": "616ec5685824bcc94416c6d4a7a446eea774a31efd7062c8480ba6fd06d7a6e5",
         "name_with_ext": "log-0.4.30.tar.gz"
       },
@@ -2622,17 +3185,24 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "log",
+        "version": "0.4.30",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=log;"
+      }
     },
-    "memchr-2.8.0": {
+    "memchr-2.8.1": {
       "name": "memchr",
-      "version": "2.8.0",
+      "version": "2.8.1",
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/memchr/2.8.0/download",
-        "sha256": "f8ca58f447f06ed17d5fc4043ce1b10dd205e060fb3ce5b979b8ed8e59ff3f79",
-        "name_with_ext": "memchr-2.8.0.tar.gz"
+        "url": "https://static.crates.io/crates/memchr/memchr-2.8.1.crate",
+        "sha256": "6b947ae49db0d222b1dbc6b113ce7248a3fc3a6ca21b696717bfc000ba4484d8",
+        "name_with_ext": "memchr-2.8.1.tar.gz"
       },
       "features": [
         "alloc",
@@ -2646,7 +3216,18 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "memchr",
+        "version": "2.8.1",
+        "edition": "2021",
+        "features": [
+          "alloc",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=memchr;"
+      }
     },
     "mio-1.2.0": {
       "name": "mio",
@@ -2654,7 +3235,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/mio/1.2.0/download",
+        "url": "https://static.crates.io/crates/mio/mio-1.2.0.crate",
         "sha256": "50b7e5b27aa02a74bac8c3f23f448f8d87ff11f92d3aac1a6ed369ee08cc56c1",
         "name_with_ext": "mio-1.2.0.tar.gz"
       },
@@ -2711,7 +3292,21 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "mio",
+        "version": "1.2.0",
+        "edition": "2021",
+        "features": [
+          "default",
+          "log",
+          "net",
+          "os-ext",
+          "os-poll"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=mio;"
+      }
     },
     "normalize-line-endings-0.3.0": {
       "name": "normalize-line-endings",
@@ -2719,7 +3314,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/normalize-line-endings/0.3.0/download",
+        "url": "https://static.crates.io/crates/normalize-line-endings/normalize-line-endings-0.3.0.crate",
         "sha256": "61807f77802ff30975e01f4f071c8ba10c022052f98b3294119f3e615d13e5be",
         "name_with_ext": "normalize-line-endings-0.3.0.tar.gz"
       },
@@ -2732,7 +3327,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "normalize-line-endings",
+        "version": "0.3.0",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=normalize_line_endings;"
+      }
     },
     "notify-8.2.0": {
       "name": "notify",
@@ -2740,7 +3342,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/notify/8.2.0/download",
+        "url": "https://static.crates.io/crates/notify/notify-8.2.0.crate",
         "sha256": "4d3d07927151ff8575b7087f245456e549fea62edf0ec4e565a5ee50c8402bc3",
         "name_with_ext": "notify-8.2.0.tar.gz"
       },
@@ -2880,6 +3482,32 @@
             "rename": "notify_types"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "notify",
+        "version": "8.2.0",
+        "edition": "2021",
+        "features": [
+          "default",
+          "fsevent-sys",
+          "macos_fsevent"
+        ],
+        "crateRenames": {
+          "fsevent-sys": [
+            {
+              "version": "4.1.0",
+              "rename": "fsevent_sys"
+            }
+          ],
+          "notify-types": [
+            {
+              "version": "2.1.0",
+              "rename": "notify_types"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=notify;"
       }
     },
     "notify-types-2.1.0": {
@@ -2888,7 +3516,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/notify-types/2.1.0/download",
+        "url": "https://static.crates.io/crates/notify-types/notify-types-2.1.0.crate",
         "sha256": "42b8cfee0e339a0337359f3c88165702ac6e600dc01c0cc9579a92d62b08477a",
         "name_with_ext": "notify-types-2.1.0.tar.gz"
       },
@@ -2921,7 +3549,14 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "notify-types",
+        "version": "2.1.0",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=notify_types;"
+      }
     },
     "num-traits-0.2.19": {
       "name": "num-traits",
@@ -2929,7 +3564,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/num-traits/0.2.19/download",
+        "url": "https://static.crates.io/crates/num-traits/num-traits-0.2.19.crate",
         "sha256": "071dfc062690e90b734c0b2273ce72ad0ffa95f0c74596bc250dcfd960262841",
         "name_with_ext": "num-traits-0.2.19.tar.gz"
       },
@@ -2962,7 +3597,15 @@
           "target": null
         }
       ],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "num-traits",
+        "version": "0.2.19",
+        "edition": "2021",
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=num_traits;"
+      }
     },
     "once_cell-1.21.4": {
       "name": "once_cell",
@@ -2970,7 +3613,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/once_cell/1.21.4/download",
+        "url": "https://static.crates.io/crates/once_cell/once_cell-1.21.4.crate",
         "sha256": "9f7c3e4beb33f85d45ae3e3a1792185706c8e16d043238c593331cc7cd313b50",
         "name_with_ext": "once_cell-1.21.4.tar.gz"
       },
@@ -2988,7 +3631,20 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "once_cell",
+        "version": "1.21.4",
+        "edition": "2021",
+        "features": [
+          "alloc",
+          "default",
+          "race",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=once_cell;"
+      }
     },
     "option-ext-0.2.0": {
       "name": "option-ext",
@@ -2996,7 +3652,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/option-ext/0.2.0/download",
+        "url": "https://static.crates.io/crates/option-ext/option-ext-0.2.0.crate",
         "sha256": "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d",
         "name_with_ext": "option-ext-0.2.0.tar.gz"
       },
@@ -3009,7 +3665,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "option-ext",
+        "version": "0.2.0",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=option_ext;"
+      }
     },
     "parking_lot-0.12.5": {
       "name": "parking_lot",
@@ -3017,7 +3680,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/parking_lot/0.12.5/download",
+        "url": "https://static.crates.io/crates/parking_lot/parking_lot-0.12.5.crate",
         "sha256": "93857453250e3077bd71ff98b6a65ea6621a19bb0f559a85248955ac12c45a1a",
         "name_with_ext": "parking_lot-0.12.5.tar.gz"
       },
@@ -3070,7 +3733,17 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "parking_lot",
+        "version": "0.12.5",
+        "edition": "2021",
+        "features": [
+          "default"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=parking_lot;"
+      }
     },
     "parking_lot_core-0.9.12": {
       "name": "parking_lot_core",
@@ -3078,7 +3751,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/parking_lot_core/0.9.12/download",
+        "url": "https://static.crates.io/crates/parking_lot_core/parking_lot_core-0.9.12.crate",
         "sha256": "2621685985a2ebf1c516881c026032ac7deafcda1a2c9b7850dc81e3dfcb64c1",
         "name_with_ext": "parking_lot_core-0.9.12.tar.gz"
       },
@@ -3154,6 +3827,22 @@
             "rename": "cfg_if"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "parking_lot_core",
+        "version": "0.9.12",
+        "edition": "2021",
+        "crateRenames": {
+          "cfg-if": [
+            {
+              "version": "1.0.4",
+              "rename": "cfg_if"
+            }
+          ]
+        },
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=parking_lot_core;"
       }
     },
     "pear-0.2.9": {
@@ -3162,7 +3851,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/pear/0.2.9/download",
+        "url": "https://static.crates.io/crates/pear/pear-0.2.9.crate",
         "sha256": "bdeeaa00ce488657faba8ebf44ab9361f9365a97bd39ffb8a60663f57ff4b467",
         "name_with_ext": "pear-0.2.9.tar.gz"
       },
@@ -3235,7 +3924,19 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "pear",
+        "version": "0.2.9",
+        "edition": "2018",
+        "features": [
+          "color",
+          "default",
+          "yansi"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=pear;"
+      }
     },
     "pear_codegen-0.2.9": {
       "name": "pear_codegen",
@@ -3243,7 +3944,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/pear_codegen/0.2.9/download",
+        "url": "https://static.crates.io/crates/pear_codegen/pear_codegen-0.2.9.crate",
         "sha256": "4bab5b985dc082b345f812b7df84e1bef27e7207b39e448439ba8bd69c93f147",
         "name_with_ext": "pear_codegen-0.2.9.tar.gz"
       },
@@ -3351,6 +4052,28 @@
             "rename": "proc_macro2_diagnostics"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "pear_codegen",
+        "version": "0.2.9",
+        "edition": "2018",
+        "crateRenames": {
+          "proc-macro2": [
+            {
+              "version": "1.0.106",
+              "rename": "proc_macro2"
+            }
+          ],
+          "proc-macro2-diagnostics": [
+            {
+              "version": "0.10.1",
+              "rename": "proc_macro2_diagnostics"
+            }
+          ]
+        },
+        "release": true,
+        "procMacro": true,
+        "preBuild": "export CARGO_CRATE_NAME=pear_codegen;"
       }
     },
     "pin-project-lite-0.2.17": {
@@ -3359,7 +4082,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/pin-project-lite/0.2.17/download",
+        "url": "https://static.crates.io/crates/pin-project-lite/pin-project-lite-0.2.17.crate",
         "sha256": "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd",
         "name_with_ext": "pin-project-lite-0.2.17.tar.gz"
       },
@@ -3372,7 +4095,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "pin-project-lite",
+        "version": "0.2.17",
+        "edition": "2018",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=pin_project_lite;"
+      }
     },
     "pkg-config-0.3.33": {
       "name": "pkg-config",
@@ -3380,7 +4110,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/pkg-config/0.3.33/download",
+        "url": "https://static.crates.io/crates/pkg-config/pkg-config-0.3.33.crate",
         "sha256": "19f132c84eca552bf34cab8ec81f1c1dcc229b811638f9d283dceabe58c5569e",
         "name_with_ext": "pkg-config-0.3.33.tar.gz"
       },
@@ -3393,11 +4123,18 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "pkg-config",
+        "version": "0.3.33",
+        "edition": "2018",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=pkg_config;"
+      }
     },
-    "pleme-bm-complete-0.1.2": {
+    "pleme-bm-complete-0.1.3": {
       "name": "pleme-bm-complete",
-      "version": "0.1.2",
+      "version": "0.1.3",
       "edition": "2024",
       "source": {
         "kind": "path",
@@ -3685,6 +4422,29 @@
             "rename": "tree_sitter_bash"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "pleme-bm-complete",
+        "version": "0.1.3",
+        "edition": "2024",
+        "crateRenames": {
+          "tree-sitter": [
+            {
+              "version": "0.25.10",
+              "rename": "tree_sitter"
+            }
+          ],
+          "tree-sitter-bash": [
+            {
+              "version": "0.23.3",
+              "rename": "tree_sitter_bash"
+            }
+          ]
+        },
+        "release": true,
+        "libName": "bm_complete",
+        "libPath": "src/lib.rs",
+        "preBuild": "export CARGO_CRATE_NAME=bm_complete;"
       }
     },
     "predicates-3.1.4": {
@@ -3693,7 +4453,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/predicates/3.1.4/download",
+        "url": "https://static.crates.io/crates/predicates/predicates-3.1.4.crate",
         "sha256": "ada8f2932f28a27ee7b70dd6c1c39ea0675c55a36879ab92f3a715eaa1e63cfe",
         "name_with_ext": "predicates-3.1.4.tar.gz"
       },
@@ -3842,6 +4602,41 @@
             "rename": "predicates_core"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "predicates",
+        "version": "3.1.4",
+        "edition": "2021",
+        "features": [
+          "color",
+          "default",
+          "diff",
+          "float-cmp",
+          "normalize-line-endings",
+          "regex"
+        ],
+        "crateRenames": {
+          "float-cmp": [
+            {
+              "version": "0.10.0",
+              "rename": "float_cmp"
+            }
+          ],
+          "normalize-line-endings": [
+            {
+              "version": "0.3.0",
+              "rename": "normalize_line_endings"
+            }
+          ],
+          "predicates-core": [
+            {
+              "version": "1.0.10",
+              "rename": "predicates_core"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=predicates;"
       }
     },
     "predicates-core-1.0.10": {
@@ -3850,7 +4645,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/predicates-core/1.0.10/download",
+        "url": "https://static.crates.io/crates/predicates-core/predicates-core-1.0.10.crate",
         "sha256": "cad38746f3166b4031b1a0d39ad9f954dd291e7854fcc0eed52ee41a0b50d144",
         "name_with_ext": "predicates-core-1.0.10.tar.gz"
       },
@@ -3863,7 +4658,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "predicates-core",
+        "version": "1.0.10",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=predicates_core;"
+      }
     },
     "predicates-tree-1.0.13": {
       "name": "predicates-tree",
@@ -3871,7 +4673,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/predicates-tree/1.0.13/download",
+        "url": "https://static.crates.io/crates/predicates-tree/predicates-tree-1.0.13.crate",
         "sha256": "d0de1b847b39c8131db0467e9df1ff60e6d0562ab8e9a16e568ad0fdb372e2f2",
         "name_with_ext": "predicates-tree-1.0.13.tar.gz"
       },
@@ -3929,6 +4731,21 @@
             "rename": "predicates_core"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "predicates-tree",
+        "version": "1.0.13",
+        "edition": "2021",
+        "crateRenames": {
+          "predicates-core": [
+            {
+              "version": "1.0.10",
+              "rename": "predicates_core"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=predicates_tree;"
       }
     },
     "pretty_assertions-1.4.1": {
@@ -3937,7 +4754,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/pretty_assertions/1.4.1/download",
+        "url": "https://static.crates.io/crates/pretty_assertions/pretty_assertions-1.4.1.crate",
         "sha256": "3ae130e2f271fbc2ac3a40fb1d07180839cdbbe443c7a27e1e3c13c5cac0116d",
         "name_with_ext": "pretty_assertions-1.4.1.tar.gz"
       },
@@ -3991,7 +4808,18 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "pretty_assertions",
+        "version": "1.4.1",
+        "edition": "2018",
+        "features": [
+          "default",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=pretty_assertions;"
+      }
     },
     "proc-macro2-1.0.106": {
       "name": "proc-macro2",
@@ -3999,7 +4827,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/proc-macro2/1.0.106/download",
+        "url": "https://static.crates.io/crates/proc-macro2/proc-macro2-1.0.106.crate",
         "sha256": "8fd00f0bb2e90d81d1044c2b32617f68fcb9fa3bb7640c23e9c748e53fb30934",
         "name_with_ext": "proc-macro2-1.0.106.tar.gz"
       },
@@ -4042,6 +4870,26 @@
             "rename": "unicode_ident"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "proc-macro2",
+        "version": "1.0.106",
+        "edition": "2021",
+        "features": [
+          "default",
+          "proc-macro"
+        ],
+        "crateRenames": {
+          "unicode-ident": [
+            {
+              "version": "1.0.24",
+              "rename": "unicode_ident"
+            }
+          ]
+        },
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=proc_macro2;"
       }
     },
     "proc-macro2-diagnostics-0.10.1": {
@@ -4050,7 +4898,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/proc-macro2-diagnostics/0.10.1/download",
+        "url": "https://static.crates.io/crates/proc-macro2-diagnostics/proc-macro2-diagnostics-0.10.1.crate",
         "sha256": "af066a9c399a26e020ada66a034357a868728e72cd426f3adcd35f80d88d88c8",
         "name_with_ext": "proc-macro2-diagnostics-0.10.1.tar.gz"
       },
@@ -4167,6 +5015,27 @@
             "rename": "proc_macro2"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "proc-macro2-diagnostics",
+        "version": "0.10.1",
+        "edition": "2018",
+        "features": [
+          "colors",
+          "default",
+          "yansi"
+        ],
+        "crateRenames": {
+          "proc-macro2": [
+            {
+              "version": "1.0.106",
+              "rename": "proc_macro2"
+            }
+          ]
+        },
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=proc_macro2_diagnostics;"
       }
     },
     "quote-1.0.45": {
@@ -4175,7 +5044,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/quote/1.0.45/download",
+        "url": "https://static.crates.io/crates/quote/quote-1.0.45.crate",
         "sha256": "41f2619966050689382d2b44f664f4bc593e129785a36d6ee376ddf37259b924",
         "name_with_ext": "quote-1.0.45.tar.gz"
       },
@@ -4218,6 +5087,26 @@
             "rename": "proc_macro2"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "quote",
+        "version": "1.0.45",
+        "edition": "2021",
+        "features": [
+          "default",
+          "proc-macro"
+        ],
+        "crateRenames": {
+          "proc-macro2": [
+            {
+              "version": "1.0.106",
+              "rename": "proc_macro2"
+            }
+          ]
+        },
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=quote;"
       }
     },
     "regex-1.12.3": {
@@ -4226,7 +5115,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/regex/1.12.3/download",
+        "url": "https://static.crates.io/crates/regex/regex-1.12.3.crate",
         "sha256": "e10754a14b9137dd7b1e3e5b0493cc9171fdd105e0ab477f51b72e7f3ac0e276",
         "name_with_ext": "regex-1.12.3.tar.gz"
       },
@@ -4266,7 +5155,7 @@
         },
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -4304,7 +5193,7 @@
         },
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -4350,6 +5239,52 @@
             "rename": "regex_syntax"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "regex",
+        "version": "1.12.3",
+        "edition": "2021",
+        "features": [
+          "default",
+          "perf",
+          "perf-backtrack",
+          "perf-cache",
+          "perf-dfa",
+          "perf-inline",
+          "perf-literal",
+          "perf-onepass",
+          "std",
+          "unicode",
+          "unicode-age",
+          "unicode-bool",
+          "unicode-case",
+          "unicode-gencat",
+          "unicode-perl",
+          "unicode-script",
+          "unicode-segment"
+        ],
+        "crateRenames": {
+          "aho-corasick": [
+            {
+              "version": "1.1.4",
+              "rename": "aho_corasick"
+            }
+          ],
+          "regex-automata": [
+            {
+              "version": "0.4.14",
+              "rename": "regex_automata"
+            }
+          ],
+          "regex-syntax": [
+            {
+              "version": "0.8.10",
+              "rename": "regex_syntax"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=regex;"
       }
     },
     "regex-automata-0.4.14": {
@@ -4358,7 +5293,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/regex-automata/0.4.14/download",
+        "url": "https://static.crates.io/crates/regex-automata/regex-automata-0.4.14.crate",
         "sha256": "6e1dd4122fc1595e8162618945476892eefca7b88c52820e74af6262213cae8f",
         "name_with_ext": "regex-automata-0.4.14.tar.gz"
       },
@@ -4404,7 +5339,7 @@
         },
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -4433,7 +5368,7 @@
         },
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -4464,6 +5399,52 @@
             "rename": "regex_syntax"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "regex-automata",
+        "version": "0.4.14",
+        "edition": "2021",
+        "features": [
+          "alloc",
+          "dfa-onepass",
+          "dfa-search",
+          "hybrid",
+          "meta",
+          "nfa-backtrack",
+          "nfa-pikevm",
+          "nfa-thompson",
+          "perf-inline",
+          "perf-literal",
+          "perf-literal-multisubstring",
+          "perf-literal-substring",
+          "std",
+          "syntax",
+          "unicode",
+          "unicode-age",
+          "unicode-bool",
+          "unicode-case",
+          "unicode-gencat",
+          "unicode-perl",
+          "unicode-script",
+          "unicode-segment",
+          "unicode-word-boundary"
+        ],
+        "crateRenames": {
+          "aho-corasick": [
+            {
+              "version": "1.1.4",
+              "rename": "aho_corasick"
+            }
+          ],
+          "regex-syntax": [
+            {
+              "version": "0.8.10",
+              "rename": "regex_syntax"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=regex_automata;"
       }
     },
     "regex-syntax-0.8.10": {
@@ -4472,7 +5453,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/regex-syntax/0.8.10/download",
+        "url": "https://static.crates.io/crates/regex-syntax/regex-syntax-0.8.10.crate",
         "sha256": "dc897dd8d9e8bd1ed8cdad82b5966c3e0ecae09fb1907d58efaa013543185d0a",
         "name_with_ext": "regex-syntax-0.8.10.tar.gz"
       },
@@ -4496,7 +5477,26 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "regex-syntax",
+        "version": "0.8.10",
+        "edition": "2021",
+        "features": [
+          "default",
+          "std",
+          "unicode",
+          "unicode-age",
+          "unicode-bool",
+          "unicode-case",
+          "unicode-gencat",
+          "unicode-perl",
+          "unicode-script",
+          "unicode-segment"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=regex_syntax;"
+      }
     },
     "rusqlite-0.32.1": {
       "name": "rusqlite",
@@ -4504,7 +5504,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/rusqlite/0.32.1/download",
+        "url": "https://static.crates.io/crates/rusqlite/rusqlite-0.32.1.crate",
         "sha256": "7753b721174eb8ff87a9a0e799e2d7bc3749323e773db92e0984debb00019d6e",
         "name_with_ext": "rusqlite-0.32.1.tar.gz"
       },
@@ -4649,6 +5649,37 @@
             "rename": "libsqlite3_sys"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "rusqlite",
+        "version": "0.32.1",
+        "edition": "2021",
+        "features": [
+          "bundled",
+          "modern_sqlite"
+        ],
+        "crateRenames": {
+          "fallible-iterator": [
+            {
+              "version": "0.3.0",
+              "rename": "fallible_iterator"
+            }
+          ],
+          "fallible-streaming-iterator": [
+            {
+              "version": "0.1.9",
+              "rename": "fallible_streaming_iterator"
+            }
+          ],
+          "libsqlite3-sys": [
+            {
+              "version": "0.30.1",
+              "rename": "libsqlite3_sys"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=rusqlite;"
       }
     },
     "rustix-1.1.4": {
@@ -4657,7 +5688,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/rustix/1.1.4/download",
+        "url": "https://static.crates.io/crates/rustix/rustix-1.1.4.crate",
         "sha256": "b6fe4565b9518b83ef4f91bb47ce29620ca828bd32cb7e408f0062e9930ba190",
         "name_with_ext": "rustix-1.1.4.tar.gz"
       },
@@ -4800,6 +5831,36 @@
             "rename": "libc_errno"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "rustix",
+        "version": "1.1.4",
+        "edition": "2021",
+        "features": [
+          "alloc",
+          "default",
+          "fs",
+          "std"
+        ],
+        "crateRenames": {
+          "errno": [
+            {
+              "version": "0.3.14",
+              "rename": "libc_errno"
+            },
+            {
+              "version": "0.3.14",
+              "rename": "libc_errno"
+            },
+            {
+              "version": "0.3.14",
+              "rename": "libc_errno"
+            }
+          ]
+        },
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=rustix;"
       }
     },
     "rustversion-1.0.22": {
@@ -4808,7 +5869,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/rustversion/1.0.22/download",
+        "url": "https://static.crates.io/crates/rustversion/rustversion-1.0.22.crate",
         "sha256": "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d",
         "name_with_ext": "rustversion-1.0.22.tar.gz"
       },
@@ -4821,7 +5882,16 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "rustversion",
+        "version": "1.0.22",
+        "edition": "2018",
+        "release": true,
+        "procMacro": true,
+        "build": "build/build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=rustversion;"
+      }
     },
     "ryu-1.0.23": {
       "name": "ryu",
@@ -4829,7 +5899,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/ryu/1.0.23/download",
+        "url": "https://static.crates.io/crates/ryu/ryu-1.0.23.crate",
         "sha256": "9774ba4a74de5f7b1c1451ed6cd5285a32eddb5cccb8cc655a4e50009e06477f",
         "name_with_ext": "ryu-1.0.23.tar.gz"
       },
@@ -4842,7 +5912,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "ryu",
+        "version": "1.0.23",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=ryu;"
+      }
     },
     "same-file-1.0.6": {
       "name": "same-file",
@@ -4850,7 +5927,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/same-file/1.0.6/download",
+        "url": "https://static.crates.io/crates/same-file/same-file-1.0.6.crate",
         "sha256": "93fc1dc3aaa9bfed95e02e6eadabb4baf7e3078b0bd1b4d7b6b0b68378900502",
         "name_with_ext": "same-file-1.0.6.tar.gz"
       },
@@ -4863,7 +5940,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "same-file",
+        "version": "1.0.6",
+        "edition": "2018",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=same_file;"
+      }
     },
     "scopeguard-1.2.0": {
       "name": "scopeguard",
@@ -4871,7 +5955,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/scopeguard/1.2.0/download",
+        "url": "https://static.crates.io/crates/scopeguard/scopeguard-1.2.0.crate",
         "sha256": "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49",
         "name_with_ext": "scopeguard-1.2.0.tar.gz"
       },
@@ -4884,7 +5968,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "scopeguard",
+        "version": "1.2.0",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=scopeguard;"
+      }
     },
     "serde-1.0.228": {
       "name": "serde",
@@ -4892,7 +5983,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/serde/1.0.228/download",
+        "url": "https://static.crates.io/crates/serde/serde-1.0.228.crate",
         "sha256": "9a8e94ea7f378bd32cbbd37198a4a91436180c5bb472411e48b5ec2e2124ae9e",
         "name_with_ext": "serde-1.0.228.tar.gz"
       },
@@ -4953,7 +6044,22 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "serde",
+        "version": "1.0.228",
+        "edition": "2021",
+        "features": [
+          "alloc",
+          "default",
+          "derive",
+          "serde_derive",
+          "std"
+        ],
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=serde;"
+      }
     },
     "serde_core-1.0.228": {
       "name": "serde_core",
@@ -4961,7 +6067,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/serde_core/1.0.228/download",
+        "url": "https://static.crates.io/crates/serde_core/serde_core-1.0.228.crate",
         "sha256": "41d385c7d4ca58e59fc732af25c3983b67ac852c1a25000afe1175de458b67ad",
         "name_with_ext": "serde_core-1.0.228.tar.gz"
       },
@@ -4978,7 +6084,20 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "serde_core",
+        "version": "1.0.228",
+        "edition": "2021",
+        "features": [
+          "alloc",
+          "result",
+          "std"
+        ],
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=serde_core;"
+      }
     },
     "serde_derive-1.0.228": {
       "name": "serde_derive",
@@ -4986,7 +6105,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/serde_derive/1.0.228/download",
+        "url": "https://static.crates.io/crates/serde_derive/serde_derive-1.0.228.crate",
         "sha256": "d540f220d3187173da220f885ab66608367b6574e925011a9353e4badda91d79",
         "name_with_ext": "serde_derive-1.0.228.tar.gz"
       },
@@ -5080,6 +6199,25 @@
             "rename": "proc_macro2"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "serde_derive",
+        "version": "1.0.228",
+        "edition": "2021",
+        "features": [
+          "default"
+        ],
+        "crateRenames": {
+          "proc-macro2": [
+            {
+              "version": "1.0.106",
+              "rename": "proc_macro2"
+            }
+          ]
+        },
+        "release": true,
+        "procMacro": true,
+        "preBuild": "export CARGO_CRATE_NAME=serde_derive;"
       }
     },
     "serde_json-1.0.150": {
@@ -5088,7 +6226,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/serde_json/1.0.150/download",
+        "url": "https://static.crates.io/crates/serde_json/serde_json-1.0.150.crate",
         "sha256": "e8014e44b4736ed0538adeecded0fce2a272f22dc9578a7eb6b2d9993c74cfb9",
         "name_with_ext": "serde_json-1.0.150.tar.gz"
       },
@@ -5124,7 +6262,7 @@
         },
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -5171,7 +6309,7 @@
         },
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -5198,7 +6336,21 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "serde_json",
+        "version": "1.0.150",
+        "edition": "2021",
+        "features": [
+          "default",
+          "indexmap",
+          "preserve_order",
+          "std"
+        ],
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=serde_json;"
+      }
     },
     "serde_spanned-0.6.9": {
       "name": "serde_spanned",
@@ -5206,7 +6358,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/serde_spanned/0.6.9/download",
+        "url": "https://static.crates.io/crates/serde_spanned/serde_spanned-0.6.9.crate",
         "sha256": "bf41e0cfaf7226dca15e8197172c295a782857fcb97fad1808a166870dee75a3",
         "name_with_ext": "serde_spanned-0.6.9.tar.gz"
       },
@@ -5241,7 +6393,17 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "serde_spanned",
+        "version": "0.6.9",
+        "edition": "2021",
+        "features": [
+          "serde"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=serde_spanned;"
+      }
     },
     "serde_yaml-0.9.34+deprecated": {
       "name": "serde_yaml",
@@ -5249,7 +6411,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/serde_yaml/0.9.34+deprecated/download",
+        "url": "https://static.crates.io/crates/serde_yaml/serde_yaml-0.9.34+deprecated.crate",
         "sha256": "6a8b1a1a2ebf674015cc02edccce75287f1a0130d394307b36743c2f5d504b47",
         "name_with_ext": "serde_yaml-0.9.34+deprecated.tar.gz"
       },
@@ -5361,6 +6523,21 @@
             "rename": "unsafe_libyaml"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "serde_yaml",
+        "version": "0.9.34+deprecated",
+        "edition": "2021",
+        "crateRenames": {
+          "unsafe-libyaml": [
+            {
+              "version": "0.2.11",
+              "rename": "unsafe_libyaml"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=serde_yaml;"
       }
     },
     "shikumi-0.1.0": {
@@ -5370,8 +6547,8 @@
       "source": {
         "kind": "git",
         "url": "https://github.com/pleme-io/shikumi",
-        "rev": "0cda5c4bb596d1e9b816e16be8a3291ffb7a85f9",
-        "sha256": "0p34im3qyj1b0akjsyg5bvg4xcsi9n0n7y1cmahr41p6mbxk7sh4"
+        "rev": "10e4a76f4d6ef1cb006419d98ee3c7d7d965ac8e",
+        "sha256": "0ls963knf4nnv0wk1n0xxcdc9kvjgwj2w2wfg44cam6qd9jin8lg"
       },
       "features": [
         "default"
@@ -5573,6 +6750,30 @@
             "rename": "async_trait"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "shikumi",
+        "version": "0.1.0",
+        "edition": "2024",
+        "features": [
+          "default"
+        ],
+        "crateRenames": {
+          "arc-swap": [
+            {
+              "version": "1.9.1",
+              "rename": "arc_swap"
+            }
+          ],
+          "async-trait": [
+            {
+              "version": "0.1.89",
+              "rename": "async_trait"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=shikumi;"
       }
     },
     "shlex-1.3.0": {
@@ -5581,7 +6782,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/shlex/1.3.0/download",
+        "url": "https://static.crates.io/crates/shlex/shlex-1.3.0.crate",
         "sha256": "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64",
         "name_with_ext": "shlex-1.3.0.tar.gz"
       },
@@ -5597,7 +6798,18 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "shlex",
+        "version": "1.3.0",
+        "edition": "2015",
+        "features": [
+          "default",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=shlex;"
+      }
     },
     "signal-hook-registry-1.4.8": {
       "name": "signal-hook-registry",
@@ -5605,7 +6817,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/signal-hook-registry/1.4.8/download",
+        "url": "https://static.crates.io/crates/signal-hook-registry/signal-hook-registry-1.4.8.crate",
         "sha256": "c4db69cba1110affc0e9f7bcd48bbf87b3f4fc7c61fc9155afd4c469eb3d6c1b",
         "name_with_ext": "signal-hook-registry-1.4.8.tar.gz"
       },
@@ -5656,7 +6868,14 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "signal-hook-registry",
+        "version": "1.4.8",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=signal_hook_registry;"
+      }
     },
     "smallvec-1.15.1": {
       "name": "smallvec",
@@ -5664,7 +6883,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/smallvec/1.15.1/download",
+        "url": "https://static.crates.io/crates/smallvec/smallvec-1.15.1.crate",
         "sha256": "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03",
         "name_with_ext": "smallvec-1.15.1.tar.gz"
       },
@@ -5677,7 +6896,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "smallvec",
+        "version": "1.15.1",
+        "edition": "2018",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=smallvec;"
+      }
     },
     "socket2-0.6.3": {
       "name": "socket2",
@@ -5685,7 +6911,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/socket2/0.6.3/download",
+        "url": "https://static.crates.io/crates/socket2/socket2-0.6.3.crate",
         "sha256": "3a766e1110788c36f4fa1c2b71b387a7815aa65f88ce0229841826633d93723e",
         "name_with_ext": "socket2-0.6.3.tar.gz"
       },
@@ -5720,7 +6946,17 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "socket2",
+        "version": "0.6.3",
+        "edition": "2021",
+        "features": [
+          "all"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=socket2;"
+      }
     },
     "streaming-iterator-0.1.9": {
       "name": "streaming-iterator",
@@ -5728,7 +6964,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/streaming-iterator/0.1.9/download",
+        "url": "https://static.crates.io/crates/streaming-iterator/streaming-iterator-0.1.9.crate",
         "sha256": "2b2231b7c3057d5e4ad0156fb3dc807d900806020c5ffa3ee6ff2c8c76fb8520",
         "name_with_ext": "streaming-iterator-0.1.9.tar.gz"
       },
@@ -5741,7 +6977,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "streaming-iterator",
+        "version": "0.1.9",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=streaming_iterator;"
+      }
     },
     "strsim-0.11.1": {
       "name": "strsim",
@@ -5749,7 +6992,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/strsim/0.11.1/download",
+        "url": "https://static.crates.io/crates/strsim/strsim-0.11.1.crate",
         "sha256": "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f",
         "name_with_ext": "strsim-0.11.1.tar.gz"
       },
@@ -5762,7 +7005,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "strsim",
+        "version": "0.11.1",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=strsim;"
+      }
     },
     "syn-2.0.117": {
       "name": "syn",
@@ -5770,7 +7020,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/syn/2.0.117/download",
+        "url": "https://static.crates.io/crates/syn/syn-2.0.117.crate",
         "sha256": "e665b8803e7b1d2a727f4023456bbbbe74da67099c585258af0ad9c5013b9b99",
         "name_with_ext": "syn-2.0.117.tar.gz"
       },
@@ -5862,6 +7112,38 @@
             "rename": "unicode_ident"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "syn",
+        "version": "2.0.117",
+        "edition": "2021",
+        "features": [
+          "clone-impls",
+          "default",
+          "derive",
+          "extra-traits",
+          "full",
+          "parsing",
+          "printing",
+          "proc-macro",
+          "visit-mut"
+        ],
+        "crateRenames": {
+          "proc-macro2": [
+            {
+              "version": "1.0.106",
+              "rename": "proc_macro2"
+            }
+          ],
+          "unicode-ident": [
+            {
+              "version": "1.0.24",
+              "rename": "unicode_ident"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=syn;"
       }
     },
     "tempfile-3.27.0": {
@@ -5870,7 +7152,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/tempfile/3.27.0/download",
+        "url": "https://static.crates.io/crates/tempfile/tempfile-3.27.0.crate",
         "sha256": "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd",
         "name_with_ext": "tempfile-3.27.0.tar.gz"
       },
@@ -5968,7 +7250,18 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "tempfile",
+        "version": "3.27.0",
+        "edition": "2021",
+        "features": [
+          "default",
+          "getrandom"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=tempfile;"
+      }
     },
     "termtree-0.5.1": {
       "name": "termtree",
@@ -5976,7 +7269,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/termtree/0.5.1/download",
+        "url": "https://static.crates.io/crates/termtree/termtree-0.5.1.crate",
         "sha256": "8f50febec83f5ee1df3015341d8bd429f2d1cc62bcba7ea2076759d315084683",
         "name_with_ext": "termtree-0.5.1.tar.gz"
       },
@@ -5989,7 +7282,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "termtree",
+        "version": "0.5.1",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=termtree;"
+      }
     },
     "thiserror-2.0.18": {
       "name": "thiserror",
@@ -5997,7 +7297,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/thiserror/2.0.18/download",
+        "url": "https://static.crates.io/crates/thiserror/thiserror-2.0.18.crate",
         "sha256": "4288b5bcbc7920c07a1149a35cf9590a2aa808e0bc1eafaade0b80947865fbc4",
         "name_with_ext": "thiserror-2.0.18.tar.gz"
       },
@@ -6040,6 +7340,26 @@
             "rename": "thiserror_impl"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "thiserror",
+        "version": "2.0.18",
+        "edition": "2021",
+        "features": [
+          "default",
+          "std"
+        ],
+        "crateRenames": {
+          "thiserror-impl": [
+            {
+              "version": "2.0.18",
+              "rename": "thiserror_impl"
+            }
+          ]
+        },
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=thiserror;"
       }
     },
     "thiserror-impl-2.0.18": {
@@ -6048,7 +7368,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/thiserror-impl/2.0.18/download",
+        "url": "https://static.crates.io/crates/thiserror-impl/thiserror-impl-2.0.18.crate",
         "sha256": "ebc4ee7f67670e9b64d05fa4253e753e016c6c95ff35b89b7941d6b856dec1d5",
         "name_with_ext": "thiserror-impl-2.0.18.tar.gz"
       },
@@ -6124,6 +7444,22 @@
             "rename": "proc_macro2"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "thiserror-impl",
+        "version": "2.0.18",
+        "edition": "2021",
+        "crateRenames": {
+          "proc-macro2": [
+            {
+              "version": "1.0.106",
+              "rename": "proc_macro2"
+            }
+          ]
+        },
+        "release": true,
+        "procMacro": true,
+        "preBuild": "export CARGO_CRATE_NAME=thiserror_impl;"
       }
     },
     "tokio-1.52.3": {
@@ -6132,7 +7468,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/tokio/1.52.3/download",
+        "url": "https://static.crates.io/crates/tokio/tokio-1.52.3.crate",
         "sha256": "8fc7f01b389ac15039e4dc9531aa973a135d7a4135281b12d7c1bc79fd57fffe",
         "name_with_ext": "tokio-1.52.3.tar.gz"
       },
@@ -6390,6 +7726,56 @@
             "rename": "tokio_macros"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "tokio",
+        "version": "1.52.3",
+        "edition": "2021",
+        "features": [
+          "bytes",
+          "default",
+          "fs",
+          "full",
+          "io-std",
+          "io-util",
+          "libc",
+          "macros",
+          "mio",
+          "net",
+          "parking_lot",
+          "process",
+          "rt",
+          "rt-multi-thread",
+          "signal",
+          "signal-hook-registry",
+          "socket2",
+          "sync",
+          "time",
+          "tokio-macros",
+          "windows-sys"
+        ],
+        "crateRenames": {
+          "pin-project-lite": [
+            {
+              "version": "0.2.17",
+              "rename": "pin_project_lite"
+            }
+          ],
+          "signal-hook-registry": [
+            {
+              "version": "1.4.8",
+              "rename": "signal_hook_registry"
+            }
+          ],
+          "tokio-macros": [
+            {
+              "version": "2.7.0",
+              "rename": "tokio_macros"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=tokio;"
       }
     },
     "tokio-macros-2.7.0": {
@@ -6398,7 +7784,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/tokio-macros/2.7.0/download",
+        "url": "https://static.crates.io/crates/tokio-macros/tokio-macros-2.7.0.crate",
         "sha256": "385a6cb71ab9ab790c5fe8d67f1645e6c450a7ce006a33de03daa956cf70a496",
         "name_with_ext": "tokio-macros-2.7.0.tar.gz"
       },
@@ -6478,6 +7864,22 @@
             "rename": "proc_macro2"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "tokio-macros",
+        "version": "2.7.0",
+        "edition": "2021",
+        "crateRenames": {
+          "proc-macro2": [
+            {
+              "version": "1.0.106",
+              "rename": "proc_macro2"
+            }
+          ]
+        },
+        "release": true,
+        "procMacro": true,
+        "preBuild": "export CARGO_CRATE_NAME=tokio_macros;"
       }
     },
     "toml-0.8.23": {
@@ -6486,7 +7888,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/toml/0.8.23/download",
+        "url": "https://static.crates.io/crates/toml/toml-0.8.23.crate",
         "sha256": "dc1beb996b9d83529a9e75c17a1686767d148d70663143c7854d8b4a09ced362",
         "name_with_ext": "toml-0.8.23.tar.gz"
       },
@@ -6589,7 +7991,19 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "toml",
+        "version": "0.8.23",
+        "edition": "2021",
+        "features": [
+          "default",
+          "display",
+          "parse"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=toml;"
+      }
     },
     "toml_datetime-0.6.11": {
       "name": "toml_datetime",
@@ -6597,7 +8011,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/toml_datetime/0.6.11/download",
+        "url": "https://static.crates.io/crates/toml_datetime/toml_datetime-0.6.11.crate",
         "sha256": "22cddaf88f4fbc13c51aebbf5f8eceb5c7c5a9da2ac40a13519eb5b0a0e8f11c",
         "name_with_ext": "toml_datetime-0.6.11.tar.gz"
       },
@@ -6632,7 +8046,17 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "toml_datetime",
+        "version": "0.6.11",
+        "edition": "2021",
+        "features": [
+          "serde"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=toml_datetime;"
+      }
     },
     "toml_edit-0.22.27": {
       "name": "toml_edit",
@@ -6640,7 +8064,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/toml_edit/0.22.27/download",
+        "url": "https://static.crates.io/crates/toml_edit/toml_edit-0.22.27.crate",
         "sha256": "41fe8c660ae4257887cf66394862d21dbca4a6ddd26f04a3560410406a2f819a",
         "name_with_ext": "toml_edit-0.22.27.tar.gz"
       },
@@ -6775,7 +8199,19 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "toml_edit",
+        "version": "0.22.27",
+        "edition": "2021",
+        "features": [
+          "display",
+          "parse",
+          "serde"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=toml_edit;"
+      }
     },
     "toml_write-0.1.2": {
       "name": "toml_write",
@@ -6783,7 +8219,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/toml_write/0.1.2/download",
+        "url": "https://static.crates.io/crates/toml_write/toml_write-0.1.2.crate",
         "sha256": "5d99f8c9a7727884afe522e9bd5edbfc91a3312b36a77b5fb8926e4c31a41801",
         "name_with_ext": "toml_write-0.1.2.tar.gz"
       },
@@ -6800,7 +8236,19 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "toml_write",
+        "version": "0.1.2",
+        "edition": "2021",
+        "features": [
+          "alloc",
+          "default",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=toml_write;"
+      }
     },
     "tracing-0.1.44": {
       "name": "tracing",
@@ -6808,7 +8256,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/tracing/0.1.44/download",
+        "url": "https://static.crates.io/crates/tracing/tracing-0.1.44.crate",
         "sha256": "63e71662fa4b2a2c3a26f570f037eb95bb1f85397f3cd8076caed2f026a6d100",
         "name_with_ext": "tracing-0.1.44.tar.gz"
       },
@@ -6901,6 +8349,39 @@
             "rename": "tracing_core"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "tracing",
+        "version": "0.1.44",
+        "edition": "2018",
+        "features": [
+          "attributes",
+          "default",
+          "std",
+          "tracing-attributes"
+        ],
+        "crateRenames": {
+          "pin-project-lite": [
+            {
+              "version": "0.2.17",
+              "rename": "pin_project_lite"
+            }
+          ],
+          "tracing-attributes": [
+            {
+              "version": "0.1.31",
+              "rename": "tracing_attributes"
+            }
+          ],
+          "tracing-core": [
+            {
+              "version": "0.1.36",
+              "rename": "tracing_core"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=tracing;"
       }
     },
     "tracing-attributes-0.1.31": {
@@ -6909,7 +8390,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/tracing-attributes/0.1.31/download",
+        "url": "https://static.crates.io/crates/tracing-attributes/tracing-attributes-0.1.31.crate",
         "sha256": "7490cfa5ec963746568740651ac6781f701c9c5ea257c58e057f3ba8cf69e8da",
         "name_with_ext": "tracing-attributes-0.1.31.tar.gz"
       },
@@ -7001,6 +8482,22 @@
             "rename": "proc_macro2"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "tracing-attributes",
+        "version": "0.1.31",
+        "edition": "2018",
+        "crateRenames": {
+          "proc-macro2": [
+            {
+              "version": "1.0.106",
+              "rename": "proc_macro2"
+            }
+          ]
+        },
+        "release": true,
+        "procMacro": true,
+        "preBuild": "export CARGO_CRATE_NAME=tracing_attributes;"
       }
     },
     "tracing-core-0.1.36": {
@@ -7009,7 +8506,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/tracing-core/0.1.36/download",
+        "url": "https://static.crates.io/crates/tracing-core/tracing-core-0.1.36.crate",
         "sha256": "db97caf9d906fbde555dd62fa95ddba9eecfd14cb388e4f491a66d74cd5fb79a",
         "name_with_ext": "tracing-core-0.1.36.tar.gz"
       },
@@ -7045,7 +8542,18 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "tracing-core",
+        "version": "0.1.36",
+        "edition": "2018",
+        "features": [
+          "once_cell",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=tracing_core;"
+      }
     },
     "tree-sitter-0.25.10": {
       "name": "tree-sitter",
@@ -7053,7 +8561,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/tree-sitter/0.25.10/download",
+        "url": "https://static.crates.io/crates/tree-sitter/tree-sitter-0.25.10.crate",
         "sha256": "78f873475d258561b06f1c595d93308a7ed124d9977cb26b148c2084a4a3cc87",
         "name_with_ext": "tree-sitter-0.25.10.tar.gz"
       },
@@ -7210,6 +8718,41 @@
             "rename": "tree_sitter_language"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "tree-sitter",
+        "version": "0.25.10",
+        "edition": "2021",
+        "features": [
+          "default",
+          "std"
+        ],
+        "crateRenames": {
+          "regex-syntax": [
+            {
+              "version": "0.8.10",
+              "rename": "regex_syntax"
+            }
+          ],
+          "streaming-iterator": [
+            {
+              "version": "0.1.9",
+              "rename": "streaming_iterator"
+            }
+          ],
+          "tree-sitter-language": [
+            {
+              "version": "0.1.7",
+              "rename": "tree_sitter_language"
+            }
+          ]
+        },
+        "release": true,
+        "build": "binding_rust/build.rs",
+        "links": "tree-sitter",
+        "libName": "tree_sitter",
+        "libPath": "binding_rust/lib.rs",
+        "preBuild": "export CARGO_CRATE_NAME=tree_sitter;"
       }
     },
     "tree-sitter-bash-0.23.3": {
@@ -7218,7 +8761,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/tree-sitter-bash/0.23.3/download",
+        "url": "https://static.crates.io/crates/tree-sitter-bash/tree-sitter-bash-0.23.3.crate",
         "sha256": "329a4d48623ac337d42b1df84e81a1c9dbb2946907c102ca72db158c1964a52e",
         "name_with_ext": "tree-sitter-bash-0.23.3.tar.gz"
       },
@@ -7280,6 +8823,24 @@
             "rename": "tree_sitter_language"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "tree-sitter-bash",
+        "version": "0.23.3",
+        "edition": "2021",
+        "crateRenames": {
+          "tree-sitter-language": [
+            {
+              "version": "0.1.7",
+              "rename": "tree_sitter_language"
+            }
+          ]
+        },
+        "release": true,
+        "build": "bindings/rust/build.rs",
+        "libName": "tree_sitter_bash",
+        "libPath": "bindings/rust/lib.rs",
+        "preBuild": "export CARGO_CRATE_NAME=tree_sitter_bash;"
       }
     },
     "tree-sitter-language-0.1.7": {
@@ -7288,7 +8849,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/tree-sitter-language/0.1.7/download",
+        "url": "https://static.crates.io/crates/tree-sitter-language/tree-sitter-language-0.1.7.crate",
         "sha256": "009994f150cc0cd50ff54917d5bc8bffe8cad10ca10d81c34da2ec421ae61782",
         "name_with_ext": "tree-sitter-language-0.1.7.tar.gz"
       },
@@ -7304,7 +8865,18 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "tree-sitter-language",
+        "version": "0.1.7",
+        "edition": "2021",
+        "release": true,
+        "build": "build.rs",
+        "links": "tree-sitter-language",
+        "libName": "tree_sitter_language",
+        "libPath": "src/language.rs",
+        "preBuild": "export CARGO_CRATE_NAME=tree_sitter_language;"
+      }
     },
     "uncased-0.9.10": {
       "name": "uncased",
@@ -7312,7 +8884,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/uncased/0.9.10/download",
+        "url": "https://static.crates.io/crates/uncased/uncased-0.9.10.crate",
         "sha256": "e1b88fcfe09e89d3866a5c11019378088af2d24c3fbd4f0543f96b479ec90697",
         "name_with_ext": "uncased-0.9.10.tar.gz"
       },
@@ -7348,7 +8920,19 @@
           "target": null
         }
       ],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "uncased",
+        "version": "0.9.10",
+        "edition": "2018",
+        "features": [
+          "alloc",
+          "default"
+        ],
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=uncased;"
+      }
     },
     "unicode-ident-1.0.24": {
       "name": "unicode-ident",
@@ -7356,7 +8940,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/unicode-ident/1.0.24/download",
+        "url": "https://static.crates.io/crates/unicode-ident/unicode-ident-1.0.24.crate",
         "sha256": "e6e4313cd5fcd3dad5cafa179702e2b244f760991f45397d14d4ebf38247da75",
         "name_with_ext": "unicode-ident-1.0.24.tar.gz"
       },
@@ -7369,7 +8953,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "unicode-ident",
+        "version": "1.0.24",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=unicode_ident;"
+      }
     },
     "unsafe-libyaml-0.2.11": {
       "name": "unsafe-libyaml",
@@ -7377,7 +8968,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/unsafe-libyaml/0.2.11/download",
+        "url": "https://static.crates.io/crates/unsafe-libyaml/unsafe-libyaml-0.2.11.crate",
         "sha256": "673aac59facbab8a9007c7f6108d11f63b603f7cabff99fabf650fea5c32b861",
         "name_with_ext": "unsafe-libyaml-0.2.11.tar.gz"
       },
@@ -7399,7 +8990,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "unsafe-libyaml",
+        "version": "0.2.11",
+        "edition": "2021",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=unsafe_libyaml;"
+      }
     },
     "utf8parse-0.2.2": {
       "name": "utf8parse",
@@ -7407,7 +9005,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/utf8parse/0.2.2/download",
+        "url": "https://static.crates.io/crates/utf8parse/utf8parse-0.2.2.crate",
         "sha256": "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821",
         "name_with_ext": "utf8parse-0.2.2.tar.gz"
       },
@@ -7422,7 +9020,17 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "utf8parse",
+        "version": "0.2.2",
+        "edition": "2018",
+        "features": [
+          "default"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=utf8parse;"
+      }
     },
     "vcpkg-0.2.15": {
       "name": "vcpkg",
@@ -7430,7 +9038,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/vcpkg/0.2.15/download",
+        "url": "https://static.crates.io/crates/vcpkg/vcpkg-0.2.15.crate",
         "sha256": "accd4ea62f7bb7a82fe23066fb0957d48ef677f6eeb8215f372f52e48bb32426",
         "name_with_ext": "vcpkg-0.2.15.tar.gz"
       },
@@ -7443,7 +9051,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "vcpkg",
+        "version": "0.2.15",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=vcpkg;"
+      }
     },
     "version_check-0.9.5": {
       "name": "version_check",
@@ -7451,7 +9066,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/version_check/0.9.5/download",
+        "url": "https://static.crates.io/crates/version_check/version_check-0.9.5.crate",
         "sha256": "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a",
         "name_with_ext": "version_check-0.9.5.tar.gz"
       },
@@ -7464,7 +9079,14 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "version_check",
+        "version": "0.9.5",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=version_check;"
+      }
     },
     "wait-timeout-0.2.1": {
       "name": "wait-timeout",
@@ -7472,7 +9094,7 @@
       "edition": "2015",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/wait-timeout/0.2.1/download",
+        "url": "https://static.crates.io/crates/wait-timeout/wait-timeout-0.2.1.crate",
         "sha256": "09ac3b126d3914f9849036f826e054cbabdc8519970b8998ddaf3b5bd3c65f11",
         "name_with_ext": "wait-timeout-0.2.1.tar.gz"
       },
@@ -7518,7 +9140,14 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "wait-timeout",
+        "version": "0.2.1",
+        "edition": "2015",
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=wait_timeout;"
+      }
     },
     "walkdir-2.5.0": {
       "name": "walkdir",
@@ -7526,7 +9155,7 @@
       "edition": "2018",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/walkdir/2.5.0/download",
+        "url": "https://static.crates.io/crates/walkdir/walkdir-2.5.0.crate",
         "sha256": "29790946404f91d9c5d06f9874efddea1dc06c5efe94541a7d6863108e3a5e4b",
         "name_with_ext": "walkdir-2.5.0.tar.gz"
       },
@@ -7566,6 +9195,21 @@
             "rename": "same_file"
           }
         ]
+      },
+      "build_rust_crate_args": {
+        "crateName": "walkdir",
+        "version": "2.5.0",
+        "edition": "2018",
+        "crateRenames": {
+          "same-file": [
+            {
+              "version": "1.0.6",
+              "rename": "same_file"
+            }
+          ]
+        },
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=walkdir;"
       }
     },
     "winnow-0.7.15": {
@@ -7574,7 +9218,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/winnow/0.7.15/download",
+        "url": "https://static.crates.io/crates/winnow/winnow-0.7.15.crate",
         "sha256": "df79d97927682d2fd8adb29682d1140b343be4ac0f08fd68b7765d9c059d3945",
         "name_with_ext": "winnow-0.7.15.tar.gz"
       },
@@ -7591,7 +9235,7 @@
       "dependencies": [
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -7602,7 +9246,7 @@
       "runtime_dependencies": [
         {
           "name": "memchr",
-          "package_key": "memchr-2.8.0",
+          "package_key": "memchr-2.8.1",
           "kind": "normal",
           "features": [],
           "uses_default_features": false,
@@ -7611,7 +9255,19 @@
         }
       ],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "winnow",
+        "version": "0.7.15",
+        "edition": "2021",
+        "features": [
+          "alloc",
+          "default",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=winnow;"
+      }
     },
     "yansi-1.0.1": {
       "name": "yansi",
@@ -7619,7 +9275,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/yansi/1.0.1/download",
+        "url": "https://static.crates.io/crates/yansi/yansi-1.0.1.crate",
         "sha256": "cfe53a6657fd280eaa890a3bc59152892ffa3e30101319d168b781ed6529b049",
         "name_with_ext": "yansi-1.0.1.tar.gz"
       },
@@ -7636,17 +9292,29 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "yansi",
+        "version": "1.0.1",
+        "edition": "2021",
+        "features": [
+          "alloc",
+          "default",
+          "std"
+        ],
+        "release": true,
+        "preBuild": "export CARGO_CRATE_NAME=yansi;"
+      }
     },
-    "zerocopy-0.8.48": {
+    "zerocopy-0.8.49": {
       "name": "zerocopy",
-      "version": "0.8.48",
+      "version": "0.8.49",
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/zerocopy/0.8.48/download",
-        "sha256": "eed437bf9d6692032087e337407a86f04cd8d6a16a37199ed57949d415bd68e9",
-        "name_with_ext": "zerocopy-0.8.48.tar.gz"
+        "url": "https://static.crates.io/crates/zerocopy/zerocopy-0.8.49.crate",
+        "sha256": "bce33a6288fa3f072a8c2c7d0f2fdbb90e28298f0135c1f99b96c3db2efcc60b",
+        "name_with_ext": "zerocopy-0.8.49.tar.gz"
       },
       "features": [
         "simd"
@@ -7659,7 +9327,18 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "zerocopy",
+        "version": "0.8.49",
+        "edition": "2021",
+        "features": [
+          "simd"
+        ],
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=zerocopy;"
+      }
     },
     "zmij-1.0.21": {
       "name": "zmij",
@@ -7667,7 +9346,7 @@
       "edition": "2021",
       "source": {
         "kind": "registry",
-        "url": "https://crates.io/api/v1/crates/zmij/1.0.21/download",
+        "url": "https://static.crates.io/crates/zmij/zmij-1.0.21.crate",
         "sha256": "b8848ee67ecc8aedbaf3e4122217aff892639231befc6a1b58d29fff4c2cabaa",
         "name_with_ext": "zmij-1.0.21.tar.gz"
       },
@@ -7680,12 +9359,20 @@
       "dependencies": [],
       "runtime_dependencies": [],
       "build_dependencies": [],
-      "crate_renames": {}
+      "crate_renames": {},
+      "build_rust_crate_args": {
+        "crateName": "zmij",
+        "version": "1.0.21",
+        "edition": "2021",
+        "release": true,
+        "build": "build.rs",
+        "preBuild": "export CARGO_CRATE_NAME=zmij;"
+      }
     }
   },
-  "root_crate": "pleme-bm-complete-0.1.2",
+  "root_crate": "pleme-bm-complete-0.1.3",
   "workspace_members": [
-    "pleme-bm-complete-0.1.2"
+    "pleme-bm-complete-0.1.3"
   ],
   "flake_metadata": {
     "pleme-bm-complete": {
