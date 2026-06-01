@@ -5,4 +5,3 @@ result
 *.swo
 .direnv/
 crate-hashes.json
-Cargo.build-spec.json
