@@ -5555,8 +5555,8 @@
     "constant_time_eq-0.4.2": {
       "edition": "2024"
     },
-    "core-foundation-sys-0.8.7": {
-      "edition": "2018"
+    "cpufeatures-0.3.0": {
+      "edition": "2024"
     },
     "diff-0.1.13": {
       "edition": "2015"
@@ -5633,6 +5633,12 @@
     "inlinable_string-0.1.15": {
       "edition": "2018"
     },
+    "inotify-0.11.1": {
+      "edition": "2018"
+    },
+    "inotify-sys-0.1.5": {
+      "edition": "2015"
+    },
     "inventory-0.3.24": {
       "edition": "2021"
     },
@@ -5640,12 +5646,6 @@
       "edition": "2021"
     },
     "itoa-1.0.18": {
-      "edition": "2021"
-    },
-    "kqueue-1.1.1": {
-      "edition": "2021"
-    },
-    "kqueue-sys-1.1.2": {
       "edition": "2021"
     },
     "libc-0.2.186": {
@@ -5656,6 +5656,9 @@
       "edition": "2021",
       "build_script": "build.rs",
       "links": "sqlite3"
+    },
+    "linux-raw-sys-0.12.1": {
+      "edition": "2021"
     },
     "lock_api-0.4.14": {
       "edition": "2021"
@@ -5953,16 +5956,13 @@
       "edition": "2021",
       "build_script": "build.rs"
     },
-    "cpufeatures-0.3.0": {
-      "edition": "2024"
-    },
-    "inotify-0.11.1": {
+    "core-foundation-sys-0.8.7": {
       "edition": "2018"
     },
-    "inotify-sys-0.1.5": {
-      "edition": "2015"
+    "kqueue-1.1.1": {
+      "edition": "2021"
     },
-    "linux-raw-sys-0.12.1": {
+    "kqueue-sys-1.1.2": {
       "edition": "2021"
     }
   },
